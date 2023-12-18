@@ -3,14 +3,15 @@
 This is a Flask-based web API for real estate calculations. It provides endpoints for calculating mortgage payments and performing a month-by-month comparison of costs.
 
 ## Project Structure
-- .gitignore 
-- app.py 
-- calculations/ 
--- init.py 
--- comparison.py 
--- mortgage_calculations.py 
-- main.py 
-- realEstimate.py
+. 
+├── .gitignore 
+├── app.py 
+├── calculations 
+│ ├── init.py 
+│ ├── comparison.py 
+│ └── mortgage_calculations.py 
+├── main.py 
+└── realEstimate.py
 
 ## Setup
 
