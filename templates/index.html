@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mortgage Calculator</title>
+</head>
+
+<body>
+    <h1>Mortgage Calculator</h1>
+    <form action="/calculate_mortgage_payments" method="post">
+        <label for="property_price">Property Price:</label><br>
+        <input type="number" id="property_price" name="property_price"><br>
+
+        <label for="down_payment_percentage">Down Payment Percentage:</label><br>
+        <input type="number" id="down_payment_percentage" name="down_payment_percentage"><br>
+
+        <label for="interest_rate_first_period">Interest Rate First Period:</label><br>
+        <input type="number" id="interest_rate_first_period" name="interest_rate_first_period"><br>
+
+        <label for="interest_rate_subsequent_min">Interest Rate Subsequent Min:</label><br>
+        <input type="number" id="interest_rate_subsequent_min" name="interest_rate_subsequent_min"><br>
+
+        <label for="interest_rate_subsequent_max">Interest Rate Subsequent Max:</label><br>
+        <input type="number" id="interest_rate_subsequent_max" name="interest_rate_subsequent_max"><br>
+
+        <label for="mortgage_term_years">Mortgage Term Years:</label><br>
+        <input type="number" id="mortgage_term_years" name="mortgage_term_years"><br>
+
+        <label for="fixed_interest_duration_years">Fixed Interest Duration Years:</label><br>
+        <input type="number" id="fixed_interest_duration_years" name="fixed_interest_duration_years"><br>
+
+        <input type="submit" value="Calculate">
+    </form>
+</body>
+
+</html>
