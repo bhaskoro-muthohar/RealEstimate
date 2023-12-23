@@ -7,10 +7,23 @@
 
 <body>
     <h1>Mortgage Calculator Results</h1>
-    <p>Monthly Payment: {{ result.monthly_payment }}</p>
-    <p>Total Interest Paid: {{ result.total_interest_paid }}</p>
-    <p>Total Payment: {{ result.total_payment }}</p>
-    <!-- Add similar paragraphs for the other results -->
+
+    <p>Monthly Payment First Period: {{ results.monthly_payment_first_period }}</p>
+    <p>Monthly Payment Subsequent Min: {{ results.monthly_payment_subsequent_min }}</p>
+    <p>Monthly Payment Subsequent Max: {{ results.monthly_payment_subsequent_max }}</p>
+    <p>Total Principal Paid: {{ results.total_principal_paid }}</p>
+    <p>Total Interest Paid Min: {{ results.total_interest_paid_min }}</p>
+    <p>Total Interest Paid Max: {{ results.total_interest_paid_max }}</p>
+    <p>Total Rent and Savings Paid: {{ results.total_rent_and_savings_paid }}</p>
+    
+    {% for month_data in results.monthly_comparison %}
+        <h2>Month {{ month_data.month }}</h2>
+        <p>Monthly Mortgage Payment: {{ month_data.monthly_mortgage_payment }}</p>
+        <p>Principal for the Month: {{ month_data.principal_for_the_month }}</p>
+        <p>Interest for the Month: {{ month_data.interest_for_the_month }}</p>
+        <p>Total Rent and Saving: {{ month_data.total_rent_and_saving }}</p>
+        <p>Financial Difference: {{ month_data.difference }}</p>
+    {% endfor %}
 </body>
 
 </html>

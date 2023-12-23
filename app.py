@@ -10,19 +10,25 @@ def index():
     return render_template('index.html')
 
 
-@app.route("/calculate_mortgage_payments", methods=["POST"])
+@app.route('/calculate_mortgage_payments', methods=['POST'])
 def mortgage_payments():
-    data = request.form
-    data = request.get_json()
-    property_price = data.get("property_price")
-    down_payment_percentage = data.get("down_payment_percentage")
-    interest_rate_first_period = data.get("interest_rate_first_period")
-    interest_rate_subsequent_min = data.get("interest_rate_subsequent_min")
-    interest_rate_subsequent_max = data.get("interest_rate_subsequent_max")
-    mortgage_term_years = data.get("mortgage_term_years")
-    fixed_interest_duration_years = data.get("fixed_interest_duration_years")
+    # Get form data
+    property_price = float(request.form.get('property_price'))
+    down_payment_percentage = float(request.form.get('down_payment_percentage'))
+    interest_rate_first_period = float(request.form.get('interest_rate_first_period'))
+    interest_rate_subsequent_min = float(request.form.get('interest_rate_subsequent_min'))
+    interest_rate_subsequent_max = float(request.form.get('interest_rate_subsequent_max'))
+    mortgage_term_years = int(request.form.get('mortgage_term_years'))
+    fixed_interest_duration_years = int(request.form.get('fixed_interest_duration_years'))
+    monthly_rent = float(request.form.get('monthly_rent'))
 
-    result = calculate_mortgage_payments(
+    # Call calculate_mortgage_payments
+    (
+        monthly_payment_first_period,
+        monthly_payment_subsequent_min,
+        monthly_payment_subsequent_max,
+        loan_amount,
+    ) = calculate_mortgage_payments(
         property_price,
         down_payment_percentage,
         interest_rate_first_period,
@@ -32,24 +38,14 @@ def mortgage_payments():
         fixed_interest_duration_years,
     )
 
-    return render_template('results.html', result=result)
-
-
-@app.route("/month_by_month_comparison", methods=["POST"])
-def comparison():
-    data = request.get_json()
-    monthly_payment_first_period = data.get("monthly_payment_first_period")
-    monthly_payment_subsequent_min = data.get("monthly_payment_subsequent_min")
-    monthly_payment_subsequent_max = data.get("monthly_payment_subsequent_max")
-    monthly_rent = data.get("monthly_rent")
-    mortgage_term_years = data.get("mortgage_term_years")
-    loan_amount = data.get("loan_amount")
-    interest_rate_first_period = data.get("interest_rate_first_period")
-    interest_rate_subsequent_min = data.get("interest_rate_subsequent_min")
-    interest_rate_subsequent_max = data.get("interest_rate_subsequent_max")
-    fixed_interest_duration_years = data.get("fixed_interest_duration_years")
-
-    result = month_by_month_comparison(
+    # Call month_by_month_comparison
+    (
+        monthly_comparison,
+        total_principal_paid,
+        total_interest_paid_min,
+        total_interest_paid_max,
+        total_rent_and_savings_paid,
+    ) = month_by_month_comparison(
         monthly_payment_first_period,
         monthly_payment_subsequent_min,
         monthly_payment_subsequent_max,
@@ -62,7 +58,28 @@ def comparison():
         fixed_interest_duration_years,
     )
 
-    return jsonify(result)
+    # Output Summary
+    total_difference_min = (
+        total_principal_paid + total_interest_paid_min 
+        - total_rent_and_savings_paid
+    )
+    total_difference_max = (
+        total_principal_paid + total_interest_paid_max 
+        - total_rent_and_savings_paid
+    )
+
+    # Create result dictionary
+    results = {
+        'total_principal_paid': total_principal_paid,
+        'total_interest_paid_min': total_interest_paid_min,
+        'total_interest_paid_max': total_interest_paid_max,
+        'total_rent_and_savings_paid': total_rent_and_savings_paid,
+        'total_difference_min': total_difference_min,
+        'total_difference_max': total_difference_max,
+        'monthly_comparison': monthly_comparison
+    }
+
+    return render_template('results.html', results=results)
 
 
 if __name__ == "__main__":
