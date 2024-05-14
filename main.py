@@ -6,11 +6,11 @@ def main():
     # Input data
     property_price = 1600000000  # IDR
     down_payment_percentage = 0.20
-    interest_rate_first_period = 0.025
+    interest_rate_first_period = 0.0111
     interest_rate_subsequent_min = 0.12
     interest_rate_subsequent_max = 0.12
-    mortgage_term_years = 2
-    fixed_interest_duration_years = 1
+    mortgage_term_years = 4
+    fixed_interest_duration_years = 3
     monthly_rent = 3500000  # IDR
 
     # Calculations
@@ -64,7 +64,7 @@ def main():
         - total_rent_and_savings_paid
     )
     print(
-        "Total Financial Difference Over 13 Years: "
+        f"Total Financial Difference Over {mortgage_term_years} Years: "
         + f"{total_difference_min} to "
         + f"{total_difference_max} IDR\n"
     )
