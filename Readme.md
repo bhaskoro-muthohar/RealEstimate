@@ -159,3 +159,21 @@ Where:
 - n is your number of payments (the number of months you will be paying the loan).
 
 Inspired by: https://www.rumah123.com/kpr/simulasi-kpr/
+
+## Additional Calculations
+
+The API also provides calculations for the following metrics over the course of the mortgage term:
+
+### Total Principal Paid
+The sum of all principal payments made over the life of the loan. It's calculated by adding up the principal portion of each monthly payment.
+
+### Total Interest Paid
+The sum of all interest payments made over the life of the loan. It's calculated by adding up the interest portion of each monthly payment. The API provides both a minimum and maximum value based on the range of interest rates.
+
+### Total Rent and Savings Paid
+This is calculated as the sum of monthly rent payments plus the amount that would have gone towards principal payments if the individual had chosen to buy instead of rent. It represents the total amount paid in rent plus potential equity buildup.
+
+### Total Financial Difference Over 5 Years
+This can be calculated as the difference between the total cost of owning (mortgage payments) and the total cost of renting (rent payments plus savings equivalent to principal payments) over the first 5 years of the mortgage term.
+
+These calculations provide a comprehensive comparison between the financial implications of buying versus renting over time.
