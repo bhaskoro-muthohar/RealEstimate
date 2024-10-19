@@ -32,42 +32,42 @@ A Flask-based web API for real estate calculations, providing endpoints for mort
 ## Setup
 
 1. Clone the repository:
-   
+   ```
      git clone <repository-url>
-   
+   ```
 
 2. Navigate to the project directory:
-   
+   ```
      cd <project-directory>
-   
+   ```
 
 3. Create a virtual environment:
-   
+   ```
      python3 -m venv venv
-   
+   ```
 
 4. Activate the virtual environment:
      - On Windows:
-     
+     ```
        venv\Scripts\activate
-     
+     ```
      - On Unix or MacOS:
-     
+     ```
        source venv/bin/activate
-     
+     ```
 
 5. Install the required packages:
-   
+   ```
      pip install -r requirements.txt
-   
+   ```
 
 ## Running the Application
 
 To run the application, use the following command:
 
-
+```
 python app.py
-
+```
 
 This will start a development server on `http://localhost:5000`.
 
