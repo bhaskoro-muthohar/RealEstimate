@@ -80,7 +80,7 @@ Calculate monthly mortgage payments based on given parameters.
 - **URL:** `/calculate_mortgage_payments`
 - **Method:** `POST`
 - **Data Params:**
-  
+  ```
     {
       "property_price": 300000,
       "down_payment_percentage": 20,
@@ -90,17 +90,17 @@ Calculate monthly mortgage payments based on given parameters.
       "mortgage_term_years": 30,
       "fixed_interest_duration_years": 5
     }
-  
+  ```
 - **Success Response:**
     - **Code:** 200
     - **Content:**
-    
+    ```
       {
         "monthly_payment_first_period": 1077.71,
         "monthly_payment_subsequent_min": 1010.92,
         "monthly_payment_subsequent_max": 1145.80
       }
-    
+    ```
 
 ### Month by Month Comparison
 
@@ -109,7 +109,7 @@ Perform a month-by-month comparison of mortgage costs versus renting.
 - **URL:** `/month_by_month_comparison`
 - **Method:** `POST`
 - **Data Params:**
-  
+  ```
     {
       "monthly_payment_first_period": 1077.71,
       "monthly_payment_subsequent_min": 1010.92,
@@ -122,11 +122,11 @@ Perform a month-by-month comparison of mortgage costs versus renting.
       "interest_rate_subsequent_max": 4.0,
       "fixed_interest_duration_years": 5
     }
-  
+  ```
 - **Success Response:**
     - **Code:** 200
     - **Content:**
-    
+    ```
       {
         "comparison": [
           {
@@ -142,14 +142,14 @@ Perform a month-by-month comparison of mortgage costs versus renting.
           // ... (data for subsequent months)
         ]
       }
-    
+    ```
 
 ## Mortgage Calculation Logic
 
 This API uses the loan amortization formula to calculate monthly mortgage payments. The formula is as follows:
 
 
-M = P[r(1+r)^n]/[(1+r)^n – 1]
+$$M = P[r(1+r)^n]/[(1+r)^n – 1]$$
 
 
 Where:
