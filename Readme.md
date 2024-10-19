@@ -12,6 +12,7 @@ A Flask-based web API for real estate calculations, providing endpoints for mort
 - [Mortgage Calculation Logic](#mortgage-calculation-logic)
 
 ## Project Structure
+```
 .
 ├── LICENSE
 ├── Readme.md
@@ -25,6 +26,7 @@ A Flask-based web API for real estate calculations, providing endpoints for mort
 └── templates
    ├── index.html
    └── results.html
+```
 
 
 ## Setup
