@@ -13,14 +13,18 @@ A Flask-based web API for real estate calculations, providing endpoints for mort
 
 ## Project Structure
 .
-├── .gitignore
+├── LICENSE
+├── Readme.md
 ├── app.py
 ├── calculations
-│   ├── __init__.py
 │   ├── comparison.py
 │   └── mortgage_calculations.py
 ├── main.py
-└── realEstimate.py
+├── realEstimate.py
+├── requirements.txt
+└── templates
+   ├── index.html
+   └── results.html
 
 
 ## Setup
