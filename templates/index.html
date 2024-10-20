@@ -56,6 +56,34 @@
         input[type="submit"]:hover {
             background-color: #2980b9;
         }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
     <script>
         function formatNumber(input) {
@@ -83,30 +111,72 @@
 
     <h1>Mortgage Calculator</h1>
     <form hx-post="/calculate_mortgage_payments" hx-target="#results" hx-swap="outerHTML">
-        <label for="property_price">Property Price:</label>
+        <label for="property_price">Property Price:
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">This is how much the house costs. It's like the price tag on the house you
+                    want to buy.</span>
+            </span>
+        </label>
         <input type="text" id="property_price" name="property_price" required oninput="formatNumber(this)">
-        <label for="down_payment_percentage">Down Payment Percentage:</label>
+
+        <label for="down_payment_percentage">Down Payment Percentage:
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">This is the part of the house price you pay right away. For example, if it's
+                    20%, you pay 20% of the house price now, and borrow the rest.</span>
+            </span>
+        </label>
         <input type="number" id="down_payment_percentage" name="down_payment_percentage" min="0" max="100" step="0.01"
             required>
 
-        <label for="interest_rate_first_period">Interest Rate First Period (%):</label>
+        <label for="interest_rate_first_period">Interest Rate First Period (%):
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">This is how much extra you pay the bank for lending you money, for the first
+                    few years. It's like a fee for borrowing.</span>
+            </span>
+        </label>
         <input type="number" id="interest_rate_first_period" name="interest_rate_first_period" min="0" max="100"
             step="0.01" required>
 
-        <label for="interest_rate_subsequent_min">Interest Rate Subsequent Min (%):</label>
+        <label for="interest_rate_subsequent_min">Interest Rate Subsequent Min (%):
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">After the first period, the interest might change. This is the lowest it could
+                    go. Lower means you pay less extra to the bank.</span>
+            </span>
+        </label>
         <input type="number" id="interest_rate_subsequent_min" name="interest_rate_subsequent_min" min="0" max="100"
             step="0.01" required>
 
-        <label for="interest_rate_subsequent_max">Interest Rate Subsequent Max (%):</label>
+        <label for="interest_rate_subsequent_max">Interest Rate Subsequent Max (%):
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">This is the highest the interest could go after the first period. Higher means
+                    you might have to pay more extra to the bank.</span>
+            </span>
+        </label>
         <input type="number" id="interest_rate_subsequent_max" name="interest_rate_subsequent_max" min="0" max="100"
             step="0.01" required>
-        <label for="mortgage_term_years">Mortgage Term Years:</label>
+
+        <label for="mortgage_term_years">Mortgage Term Years:
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">This is how many years you'll take to pay back all the money you borrowed for
+                    the house. Like 15 or 30 years.</span>
+            </span>
+        </label>
         <input type="number" id="mortgage_term_years" name="mortgage_term_years" required>
 
-        <label for="fixed_interest_duration_years">Fixed Interest Duration Years:</label>
+        <label for="fixed_interest_duration_years">Fixed Interest Duration Years:
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">This is how long the first interest rate stays the same before it can change.
+                    It's like a promise from the bank to keep the same rate for a while.</span>
+            </span>
+        </label>
         <input type="number" id="fixed_interest_duration_years" name="fixed_interest_duration_years" required>
 
-        <label for="monthly_rent">Monthly Rent:</label>
+        <label for="monthly_rent">Monthly Rent:
+            <span class="tooltip">ℹ️
+                <span class="tooltiptext">This is how much you might pay each month if you rented a similar house
+                    instead of buying. It helps compare buying vs renting.</span>
+            </span>
+        </label>
         <input type="text" id="monthly_rent" name="monthly_rent" required oninput="formatNumber(this)">
 
         <input type="submit" value="Calculate">
