@@ -64,6 +64,7 @@
             input.value = value;
         }
     </script>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 
 <body>
@@ -81,7 +82,7 @@
     </header>
 
     <h1>Mortgage Calculator</h1>
-    <form action="/calculate_mortgage_payments" method="post">
+    <form hx-post="/calculate_mortgage_payments" hx-target="#results" hx-swap="outerHTML">
         <label for="property_price">Property Price:</label>
         <input type="text" id="property_price" name="property_price" required oninput="formatNumber(this)">
         <label for="down_payment_percentage">Down Payment Percentage:</label>
@@ -110,6 +111,8 @@
 
         <input type="submit" value="Calculate">
     </form>
+
+    <div id="results"></div>
 </body>
 
 </html>

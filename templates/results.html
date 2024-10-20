@@ -73,66 +73,67 @@
             </svg>
         </a>
     </header>
-
-    <h1>Mortgage Calculator Results</h1>
-    <div class="summary">
-        <h2>Summary</h2>
-        <div class="summary-grid">
-            <div class="summary-item">
-                <div class="label" title="The monthly mortgage payment during the initial fixed-rate period.">Monthly
-                    Payment (First Period):</div>
-                <div class="value">{{ results.monthly_payment_first_period | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label"
-                    title="The minimum possible monthly payment after the fixed-rate period, based on the lowest potential interest rate.">
-                    Monthly Payment (Subsequent Min):</div>
-                <div class="value">{{ results.monthly_payment_subsequent_min | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label"
-                    title="The maximum possible monthly payment after the fixed-rate period, based on the highest potential interest rate.">
-                    Monthly Payment (Subsequent Max):</div>
-                <div class="value">{{ results.monthly_payment_subsequent_max | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label" title="The sum of all principal payments made over the life of the loan.">Total
-                    Principal Paid:</div>
-                <div class="value">{{ results.total_principal_paid | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label"
-                    title="The minimum total interest paid over the life of the loan, based on the lowest potential interest rate.">
-                    Total Interest Paid (Min):</div>
-                <div class="value">{{ results.total_interest_paid_min | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label"
-                    title="The maximum total interest paid over the life of the loan, based on the highest potential interest rate.">
-                    Total Interest Paid (Max):</div>
-                <div class="value">{{ results.total_interest_paid_max | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label"
-                    title="The sum of monthly rent payments plus the amount that would have gone towards principal payments if buying instead of renting.">
-                    Total Rent and Savings Paid:</div>
-                <div class="value">{{ results.total_rent_and_savings_paid | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label"
-                    title="The minimum difference between the total cost of owning and the total cost of renting over the mortgage term.">
-                    Total Financial Difference (Min):</div>
-                <div class="value">{{ results.total_difference_min | round(2) | format_number }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label"
-                    title="The maximum difference between the total cost of owning and the total cost of renting over the mortgage term.">
-                    Total Financial Difference (Max):</div>
-                <div class="value">{{ results.total_difference_max | round(2) | format_number }}</div>
+    <div id="results">
+        <h1>Mortgage Calculator Results</h1>
+        <div class="summary">
+            <h2>Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="label" title="The monthly mortgage payment during the initial fixed-rate period.">
+                        Monthly
+                        Payment (First Period):</div>
+                    <div class="value">{{ results.monthly_payment_first_period | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label"
+                        title="The minimum possible monthly payment after the fixed-rate period, based on the lowest potential interest rate.">
+                        Monthly Payment (Subsequent Min):</div>
+                    <div class="value">{{ results.monthly_payment_subsequent_min | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label"
+                        title="The maximum possible monthly payment after the fixed-rate period, based on the highest potential interest rate.">
+                        Monthly Payment (Subsequent Max):</div>
+                    <div class="value">{{ results.monthly_payment_subsequent_max | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label" title="The sum of all principal payments made over the life of the loan.">Total
+                        Principal Paid:</div>
+                    <div class="value">{{ results.total_principal_paid | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label"
+                        title="The minimum total interest paid over the life of the loan, based on the lowest potential interest rate.">
+                        Total Interest Paid (Min):</div>
+                    <div class="value">{{ results.total_interest_paid_min | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label"
+                        title="The maximum total interest paid over the life of the loan, based on the highest potential interest rate.">
+                        Total Interest Paid (Max):</div>
+                    <div class="value">{{ results.total_interest_paid_max | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label"
+                        title="The sum of monthly rent payments plus the amount that would have gone towards principal payments if buying instead of renting.">
+                        Total Rent and Savings Paid:</div>
+                    <div class="value">{{ results.total_rent_and_savings_paid | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label"
+                        title="The minimum difference between the total cost of owning and the total cost of renting over the mortgage term.">
+                        Total Financial Difference (Min):</div>
+                    <div class="value">{{ results.total_difference_min | round(2) | format_number }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label"
+                        title="The maximum difference between the total cost of owning and the total cost of renting over the mortgage term.">
+                        Total Financial Difference (Max):</div>
+                    <div class="value">{{ results.total_difference_max | round(2) | format_number }}</div>
+                </div>
             </div>
         </div>
     </div>
-
     <div class="summary-item">
         <div class="label" title="Comparison between renting and buying">Renting vs Buying Comparison:</div>
         <div class="value">
