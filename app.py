@@ -30,7 +30,8 @@ async def mortgage_payments(
     interest_rate_subsequent_max: float = Form(...),
     mortgage_term_years: int = Form(...),
     fixed_interest_duration_years: int = Form(...),
-    monthly_rent: str = Form(...)
+    monthly_rent: str = Form(...),
+    investment_return_rate: float = Form(...)
 ):
     mortgage_params = MortgageParams(
         property_price=parse_formatted_number(property_price),
@@ -46,52 +47,28 @@ async def mortgage_payments(
     comparison_params = ComparisonParams(
         monthly_rent=parse_formatted_number(monthly_rent),
         mortgage_params=mortgage_params,
-        mortgage_payments=mortgage_payments
+        mortgage_payments=mortgage_payments,
+        investment_return_rate=investment_return_rate / 100
     )
 
     comparison_result = MortgageComparison.month_by_month_comparison(comparison_params)
-
-    total_difference_min = (
-        comparison_result.total_principal_paid + comparison_result.total_interest_paid_min 
-        - comparison_result.total_rent_and_savings_paid
-    )
-    total_difference_max = (
-        comparison_result.total_principal_paid + comparison_result.total_interest_paid_max 
-        - comparison_result.total_rent_and_savings_paid
-    )
-
-    total_mortgage_cost_min = comparison_result.total_principal_paid + comparison_result.total_interest_paid_min
-    total_mortgage_cost_max = comparison_result.total_principal_paid + comparison_result.total_interest_paid_max
-
-    difference_min = total_mortgage_cost_min - comparison_result.total_rent_and_savings_paid
-    difference_max = total_mortgage_cost_max - comparison_result.total_rent_and_savings_paid
-
-    percentage_difference_min = (difference_min / total_mortgage_cost_min) * 100
-    percentage_difference_max = (difference_max / total_mortgage_cost_max) * 100
 
     results = {
         'monthly_payment_first_period': mortgage_payments.monthly_payment_first_period,
         'monthly_payment_subsequent_min': mortgage_payments.monthly_payment_subsequent_min,
         'monthly_payment_subsequent_max': mortgage_payments.monthly_payment_subsequent_max,
-        'total_principal_paid': comparison_result.total_principal_paid,
-        'total_interest_paid_min': comparison_result.total_interest_paid_min,
-        'total_interest_paid_max': comparison_result.total_interest_paid_max,
-        'total_rent_and_savings_paid': comparison_result.total_rent_and_savings_paid,
-        'total_difference_min': total_difference_min,
-        'total_difference_max': total_difference_max,
+        'total_mortgage_cost': comparison_result.total_mortgage_cost,
+        'total_rent_cost': comparison_result.total_rent_cost,
+        'total_investment_growth': comparison_result.total_investment_growth,
+        'net_benefit_buying': comparison_result.net_benefit_buying,
         'monthly_comparison': comparison_result.monthly_comparison,
+        'total_difference_max': comparison_result.total_difference_max,
+        'is_renting_better': comparison_result.is_renting_better,
+        'difference_min': comparison_result.difference_min,
+        'difference_max': comparison_result.difference_max,
+        'percentage_difference_min': comparison_result.percentage_difference_min,
+        'percentage_difference_max': comparison_result.percentage_difference_max,
     }
-
-    results.update({
-        'difference_min': difference_min,
-        'difference_max': difference_max,
-        'percentage_difference_min': percentage_difference_min,
-        'percentage_difference_max': percentage_difference_max,
-        'is_renting_better': difference_min > 0
-    })
-    results['difference_max'] = difference_max
-    results['difference_min'] = difference_min
     return templates.TemplateResponse("results.html", {"request": request, "results": results})
-
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
