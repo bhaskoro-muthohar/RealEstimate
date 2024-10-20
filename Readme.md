@@ -1,15 +1,13 @@
-# Real Estate Calculator API
+# RealEstimate: Real Estate Calculator
 
-A Flask-based web API for real estate calculations, providing endpoints for mortgage payment calculations and month-by-month cost comparisons.
+A FastAPI-based web application for real estate calculations, providing a user-friendly interface for mortgage payment calculations and rent vs. buy comparisons.
 
 ## Table of Contents
 - [Project Structure](#project-structure)
 - [Setup](#setup)
 - [Running the Application](#running-the-application)
-- [API Endpoints](#api-endpoints)
-    - [Calculate Mortgage Payments](#calculate-mortgage-payments)
-    - [Month by Month Comparison](#month-by-month-comparison)
-- [Mortgage Calculation Logic](#mortgage-calculation-logic)
+- [Features](#features)
+- [Calculation Logic](#calculation-logic)
 
 ## Project Structure
 ```
@@ -70,6 +68,50 @@ python app.py
 ```
 
 This will start a development server on `http://localhost:5000`.
+
+## Features
+
+1. **User-friendly Web Interface**: Input mortgage parameters through a clean, responsive HTML form.
+2. **Mortgage Payment Calculation**: Calculates monthly mortgage payments for both fixed and variable interest rate periods.
+3. **Rent vs. Buy Comparison**: Provides a detailed month-by-month comparison of costs associated with renting versus buying.
+4. **Comprehensive Results**: Displays total principal paid, total interest paid (min and max), total rent and savings paid, and overall financial differences.
+
+## Calculation Logic
+
+This API uses the loan amortization formula to calculate monthly mortgage payments. The formula is as follows:
+
+
+$$M = P[r(1+r)^n]/[(1+r)^n – 1]$$
+
+
+Where:
+- M is your monthly payment.
+- P is the principal loan amount.
+- r is your monthly interest rate, calculated by dividing your annual interest rate by 12.
+- n is your number of payments (the number of months you will be paying the loan).
+
+The application uses the following key calculations:
+
+1. **Monthly Mortgage Payment**:
+   Calculated using the standard amortization formula.
+
+2. **Total Principal Paid**:
+   Sum of all principal payments over the loan term.
+
+3. **Total Interest Paid**:
+   Sum of all interest payments, with minimum and maximum values based on variable interest rates.
+
+4. **Total Rent and Savings Paid**:
+   Sum of monthly rent payments plus potential principal payments if buying.
+
+5. **Financial Difference**:
+   Comparison between total costs of buying versus renting, including percentage differences.
+
+The results are presented in both summary and detailed month-by-month formats, allowing users to make informed decisions about renting versus buying property.
+
+For more detailed information about the calculations, please refer to the `calculations` directory in the source code.
+
+Inspired by: https://www.rumah123.com/kpr/simulasi-kpr/
 
 ## API Endpoints
 
@@ -143,37 +185,3 @@ Perform a month-by-month comparison of mortgage costs versus renting.
         ]
       }
     ```
-
-## Mortgage Calculation Logic
-
-This API uses the loan amortization formula to calculate monthly mortgage payments. The formula is as follows:
-
-
-$$M = P[r(1+r)^n]/[(1+r)^n – 1]$$
-
-
-Where:
-- M is your monthly payment.
-- P is the principal loan amount.
-- r is your monthly interest rate, calculated by dividing your annual interest rate by 12.
-- n is your number of payments (the number of months you will be paying the loan).
-
-Inspired by: https://www.rumah123.com/kpr/simulasi-kpr/
-
-## Additional Calculations
-
-The API also provides calculations for the following metrics over the course of the mortgage term:
-
-### Total Principal Paid
-The sum of all principal payments made over the life of the loan. It's calculated by adding up the principal portion of each monthly payment.
-
-### Total Interest Paid
-The sum of all interest payments made over the life of the loan. It's calculated by adding up the interest portion of each monthly payment. The API provides both a minimum and maximum value based on the range of interest rates.
-
-### Total Rent and Savings Paid
-This is calculated as the sum of monthly rent payments plus the amount that would have gone towards principal payments if the individual had chosen to buy instead of rent. It represents the total amount paid in rent plus potential equity buildup.
-
-### Total Financial Difference Over 5 Years
-This can be calculated as the difference between the total cost of owning (mortgage payments) and the total cost of renting (rent payments plus savings equivalent to principal payments) over the first 5 years of the mortgage term.
-
-These calculations provide a comprehensive comparison between the financial implications of buying versus renting over time.
