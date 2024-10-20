@@ -10,8 +10,8 @@ def main():
         interest_rate_first_period=0.0792,
         interest_rate_subsequent_min=0.12,
         interest_rate_subsequent_max=0.12,
-        mortgage_term_years=5,
-        fixed_interest_duration_years=3
+        mortgage_term_years=1,
+        fixed_interest_duration_years=1
     )
     monthly_rent = 5000000  # IDR
 

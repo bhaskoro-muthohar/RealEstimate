@@ -53,6 +53,9 @@ async def mortgage_payments(
     )
 
     results = {
+        'monthly_payment_first_period': mortgage_payments.monthly_payment_first_period,
+        'monthly_payment_subsequent_min': mortgage_payments.monthly_payment_subsequent_min,
+        'monthly_payment_subsequent_max': mortgage_payments.monthly_payment_subsequent_max,
         'total_principal_paid': comparison_result.total_principal_paid,
         'total_interest_paid_min': comparison_result.total_interest_paid_min,
         'total_interest_paid_max': comparison_result.total_interest_paid_max,
@@ -63,7 +66,6 @@ async def mortgage_payments(
     }
 
     return templates.TemplateResponse("results.html", {"request": request, "results": results})
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -15,14 +15,19 @@
     <p>Total Interest Paid Min: {{ results.total_interest_paid_min }}</p>
     <p>Total Interest Paid Max: {{ results.total_interest_paid_max }}</p>
     <p>Total Rent and Savings Paid: {{ results.total_rent_and_savings_paid }}</p>
-    
+    <p>Total Financial Difference Min: {{ results.total_difference_min }}</p>
+    <p>Total Financial Difference Max: {{ results.total_difference_max }}</p>
+
     {% for month_data in results.monthly_comparison %}
-        <h2>Month {{ month_data.month }}</h2>
-        <p>Monthly Mortgage Payment: {{ month_data.monthly_mortgage_payment }}</p>
-        <p>Principal for the Month: {{ month_data.principal_for_the_month }}</p>
-        <p>Interest for the Month: {{ month_data.interest_for_the_month }}</p>
-        <p>Total Rent and Saving: {{ month_data.total_rent_and_saving }}</p>
-        <p>Financial Difference: {{ month_data.difference }}</p>
+    <h2>Month {{ month_data.month }}</h2>
+    <p>Monthly Mortgage Payment (min rate): {{ month_data.monthly_mortgage_payment_min }}</p>
+    <p>Monthly Mortgage Payment (max rate): {{ month_data.monthly_mortgage_payment_max }}</p>
+    <p>Principal for the Month: {{ month_data.principal_for_the_month }}</p>
+    <p>Interest for the Month (min rate): {{ month_data.interest_for_the_month_min }}</p>
+    <p>Interest for the Month (max rate): {{ month_data.interest_for_the_month_max }}</p>
+    <p>Total Rent and Saving: {{ month_data.total_rent_and_savings }}</p>
+    <p>Financial Difference (min rate): {{ month_data.difference_min }}</p>
+    <p>Financial Difference (max rate): {{ month_data.difference_max }}</p>
     {% endfor %}
 </body>
 
