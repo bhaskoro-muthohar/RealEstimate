@@ -1,43 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mortgage Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        form {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+    </style>
+    <script>
+        function formatNumber(input) {
+            let value = input.value.replace(/,/g, '');
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            input.value = value;
+        }
+    </script>
 </head>
 
 <body>
+    <header style="text-align: right; margin-bottom: 20px; font-size: 0.9em; color: #777;">
+        <span style="margin-right: 10px;">Made by Bhaskoro Muthohar</span>
+        <a href="https://github.com/bhaskoro-muthohar/RealEstimate" target="_blank" rel="noopener noreferrer"
+            style="vertical-align: middle;">
+            <svg height="24" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true"
+                class="octicon octicon-mark-github v-align-middle">
+                <path fill-rule="evenodd"
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                </path>
+            </svg>
+        </a>
+    </header>
+
     <h1>Mortgage Calculator</h1>
     <form action="/calculate_mortgage_payments" method="post">
-        <label for="property_price">Property Price:</label><br>
-        <input type="number" id="property_price" name="property_price"><br>
+        <label for="property_price">Property Price:</label>
+        <input type="text" id="property_price" name="property_price" required oninput="formatNumber(this)">
+        <label for="down_payment_percentage">Down Payment Percentage:</label>
+        <input type="number" id="down_payment_percentage" name="down_payment_percentage" min="0" max="100" step="0.01"
+            required>
 
-        <label for="down_payment_percentage">Down Payment Percentage:</label><br>
-        <input type="number" id="down_payment_percentage" name="down_payment_percentage" min="0" max="100"
-            step="0.1"><br>
-
-        <label for="interest_rate_first_period">Interest Rate First Period:</label><br>
+        <label for="interest_rate_first_period">Interest Rate First Period (%):</label>
         <input type="number" id="interest_rate_first_period" name="interest_rate_first_period" min="0" max="100"
-            step="0.0001"><br>
+            step="0.01" required>
 
-        <label for="interest_rate_subsequent_min">Interest Rate Subsequent Min:</label><br>
+        <label for="interest_rate_subsequent_min">Interest Rate Subsequent Min (%):</label>
         <input type="number" id="interest_rate_subsequent_min" name="interest_rate_subsequent_min" min="0" max="100"
-            step="0.0001"><br>
+            step="0.01" required>
 
-        <label for="interest_rate_subsequent_max">Interest Rate Subsequent Max:</label><br>
+        <label for="interest_rate_subsequent_max">Interest Rate Subsequent Max (%):</label>
         <input type="number" id="interest_rate_subsequent_max" name="interest_rate_subsequent_max" min="0" max="100"
-            step="0.0001"><br>
-        <label for="mortgage_term_years">Mortgage Term Years:</label><br>
-        <input type="number" id="mortgage_term_years" name="mortgage_term_years"><br>
+            step="0.01" required>
+        <label for="mortgage_term_years">Mortgage Term Years:</label>
+        <input type="number" id="mortgage_term_years" name="mortgage_term_years" required>
 
-        <label for="fixed_interest_duration_years">Fixed Interest Duration Years:</label><br>
-        <input type="number" id="fixed_interest_duration_years" name="fixed_interest_duration_years" min="0" max="100"
-            step="0.0001"><br>
+        <label for="fixed_interest_duration_years">Fixed Interest Duration Years:</label>
+        <input type="number" id="fixed_interest_duration_years" name="fixed_interest_duration_years" required>
 
-        <label for="monthly_rent">Monthly Rent:</label><br>
-        <input type="number" id="monthly_rent" name="monthly_rent"><br>
+        <label for="monthly_rent">Monthly Rent:</label>
+        <input type="text" id="monthly_rent" name="monthly_rent" required oninput="formatNumber(this)">
 
         <input type="submit" value="Calculate">
     </form>
 </body>
+
+</html>
 
 </html>

@@ -1,33 +1,211 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mortgage Calculator Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
+
+        .summary,
+        .monthly-details {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .monthly-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            cursor: help;
+            text-decoration: underline dotted;
+        }
+
+        .value {
+            color: #3498db;
+        }
+    </style>
 </head>
 
 <body>
+    <header style="text-align: right; margin-bottom: 20px; font-size: 0.9em; color: #777;">
+        <span style="margin-right: 10px;">Made by Bhaskoro Muthohar</span>
+        <a href="https://github.com/bhaskoro-muthohar/RealEstimate" target="_blank" rel="noopener noreferrer"
+            style="vertical-align: middle;">
+            <svg height="24" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true"
+                class="octicon octicon-mark-github v-align-middle">
+                <path fill-rule="evenodd"
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                </path>
+            </svg>
+        </a>
+    </header>
+
     <h1>Mortgage Calculator Results</h1>
+    <div class="summary">
+        <h2>Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="label" title="The monthly mortgage payment during the initial fixed-rate period.">Monthly
+                    Payment (First Period):</div>
+                <div class="value">{{ results.monthly_payment_first_period | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label"
+                    title="The minimum possible monthly payment after the fixed-rate period, based on the lowest potential interest rate.">
+                    Monthly Payment (Subsequent Min):</div>
+                <div class="value">{{ results.monthly_payment_subsequent_min | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label"
+                    title="The maximum possible monthly payment after the fixed-rate period, based on the highest potential interest rate.">
+                    Monthly Payment (Subsequent Max):</div>
+                <div class="value">{{ results.monthly_payment_subsequent_max | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label" title="The sum of all principal payments made over the life of the loan.">Total
+                    Principal Paid:</div>
+                <div class="value">{{ results.total_principal_paid | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label"
+                    title="The minimum total interest paid over the life of the loan, based on the lowest potential interest rate.">
+                    Total Interest Paid (Min):</div>
+                <div class="value">{{ results.total_interest_paid_min | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label"
+                    title="The maximum total interest paid over the life of the loan, based on the highest potential interest rate.">
+                    Total Interest Paid (Max):</div>
+                <div class="value">{{ results.total_interest_paid_max | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label"
+                    title="The sum of monthly rent payments plus the amount that would have gone towards principal payments if buying instead of renting.">
+                    Total Rent and Savings Paid:</div>
+                <div class="value">{{ results.total_rent_and_savings_paid | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label"
+                    title="The minimum difference between the total cost of owning and the total cost of renting over the mortgage term.">
+                    Total Financial Difference (Min):</div>
+                <div class="value">{{ results.total_difference_min | round(2) | format_number }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label"
+                    title="The maximum difference between the total cost of owning and the total cost of renting over the mortgage term.">
+                    Total Financial Difference (Max):</div>
+                <div class="value">{{ results.total_difference_max | round(2) | format_number }}</div>
+            </div>
+        </div>
+    </div>
 
-    <p>Monthly Payment First Period: {{ results.monthly_payment_first_period }}</p>
-    <p>Monthly Payment Subsequent Min: {{ results.monthly_payment_subsequent_min }}</p>
-    <p>Monthly Payment Subsequent Max: {{ results.monthly_payment_subsequent_max }}</p>
-    <p>Total Principal Paid: {{ results.total_principal_paid }}</p>
-    <p>Total Interest Paid Min: {{ results.total_interest_paid_min }}</p>
-    <p>Total Interest Paid Max: {{ results.total_interest_paid_max }}</p>
-    <p>Total Rent and Savings Paid: {{ results.total_rent_and_savings_paid }}</p>
-    <p>Total Financial Difference Min: {{ results.total_difference_min }}</p>
-    <p>Total Financial Difference Max: {{ results.total_difference_max }}</p>
+    <div class="summary-item">
+        <div class="label" title="Comparison between renting and buying">Renting vs Buying Comparison:</div>
+        <div class="value">
+            {% if results.is_renting_better %}
+            Renting and Saving is more economical by {{ results.difference_min | round(2) | format_number }} to {{
+            results.difference_max | round(2) | format_number }} IDR
+            <br>
+            This represents a {{ results.percentage_difference_min | round(2) }}% to {{
+            results.percentage_difference_max |
+            round(2) }}% savings compared to buying
+            {% else %}
+            Buying is more economical by {{ (-results.difference_max) | round(2) | format_number }} to {{
+            (-results.difference_min) | round(2) | format_number }} IDR
+            <br>
+            This represents a {{ (-results.percentage_difference_max) | round(2) }}% to {{
+            (-results.percentage_difference_min) | round(2) }}% savings compared to renting
+            {% endif %}
+        </div>
+    </div>
 
+    <h2>Monthly Comparison</h2>
     {% for month_data in results.monthly_comparison %}
-    <h2>Month {{ month_data.month }}</h2>
-    <p>Monthly Mortgage Payment (min rate): {{ month_data.monthly_mortgage_payment_min }}</p>
-    <p>Monthly Mortgage Payment (max rate): {{ month_data.monthly_mortgage_payment_max }}</p>
-    <p>Principal for the Month: {{ month_data.principal_for_the_month }}</p>
-    <p>Interest for the Month (min rate): {{ month_data.interest_for_the_month_min }}</p>
-    <p>Interest for the Month (max rate): {{ month_data.interest_for_the_month_max }}</p>
-    <p>Total Rent and Saving: {{ month_data.total_rent_and_savings }}</p>
-    <p>Financial Difference (min rate): {{ month_data.difference_min }}</p>
-    <p>Financial Difference (max rate): {{ month_data.difference_max }}</p>
+    <div class="monthly-details">
+        <div>
+            <div class="label" title="The current month of the mortgage term.">Month:</div>
+            <div class="value">{{ month_data.month }}</div>
+        </div>
+        <div>
+            <div class="label" title="The monthly mortgage payment based on the minimum potential interest rate.">
+                Mortgage Payment (Min Rate):</div>
+            <div class="value">{{ month_data.monthly_mortgage_payment_min | round(2) | format_number }}</div>
+        </div>
+        <div>
+            <div class="label" title="The monthly mortgage payment based on the maximum potential interest rate.">
+                Mortgage Payment (Max Rate):</div>
+            <div class="value">{{ month_data.monthly_mortgage_payment_max | round(2) | format_number }}</div>
+        </div>
+        <div>
+            <div class="label" title="The amount of the monthly payment that goes towards reducing the loan principal.">
+                Principal:</div>
+            <div class="value">{{ month_data.principal_for_the_month | round(2) | format_number }}</div>
+        </div>
+        <div>
+            <div class="label"
+                title="The amount of interest paid this month based on the minimum potential interest rate.">Interest
+                (Min Rate):</div>
+            <div class="value">{{ month_data.interest_for_the_month_min | round(2) | format_number }}</div>
+        </div>
+        <div>
+            <div class="label"
+                title="The amount of interest paid this month based on the maximum potential interest rate.">Interest
+                (Max Rate):</div>
+            <div class="value">{{ month_data.interest_for_the_month_max | round(2) | format_number }}</div>
+        </div>
+        <div>
+            <div class="label"
+                title="The total amount paid in rent plus potential savings (equivalent to principal payment) for this month.">
+                Total Rent and Saving:</div>
+            <div class="value">{{ month_data.total_rent_and_savings | round(2) | format_number }}</div>
+        </div>
+        <div>
+            <div class="label"
+                title="The difference between mortgage costs and rent+savings for this month, based on the minimum interest rate.">
+                Financial Difference (Min Rate):</div>
+            <div class="value">{{ month_data.difference_min | round(2) | format_number }}</div>
+        </div>
+        <div>
+            <div class="label"
+                title="The difference between mortgage costs and rent+savings for this month, based on the maximum interest rate.">
+                Financial Difference (Max Rate):</div>
+            <div class="value">{{ month_data.difference_max | round(2) | format_number }}</div>
+        </div>
+    </div>
     {% endfor %}
 </body>
 

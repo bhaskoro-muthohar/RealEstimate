@@ -27,26 +27,31 @@ def main():
     comparison_result = MortgageComparison.month_by_month_comparison(comparison_params)
 
     # Output Summary
-    print(f"Total Principal Paid: {comparison_result.total_principal_paid} IDR")
+    print(f"Total Principal Paid: {comparison_result.total_principal_paid:,.0f} IDR")
     print(
-        f"Total Interest Paid: {comparison_result.total_interest_paid_min} to "
-        f"{comparison_result.total_interest_paid_max} IDR"
+        f"Total Interest Paid: {comparison_result.total_interest_paid_min:,.0f} to "
+        f"{comparison_result.total_interest_paid_max:,.0f} IDR"
     )
-    print(f"Total Rent and Savings Paid: {comparison_result.total_rent_and_savings_paid} IDR")
-    total_difference_min = (
-        comparison_result.total_principal_paid + comparison_result.total_interest_paid_min 
-        - comparison_result.total_rent_and_savings_paid
-    )
-    total_difference_max = (
-        comparison_result.total_principal_paid + comparison_result.total_interest_paid_max 
-        - comparison_result.total_rent_and_savings_paid
-    )
-    print(
-        f"Total Financial Difference Over {mortgage_params.mortgage_term_years} Years: "
-        + f"{total_difference_min} to "
-        + f"{total_difference_max} IDR\n"
-    )
+    print(f"Total Rent and Savings Paid: {comparison_result.total_rent_and_savings_paid:,.0f} IDR")
 
+    total_mortgage_cost_min = comparison_result.total_principal_paid + comparison_result.total_interest_paid_min
+    total_mortgage_cost_max = comparison_result.total_principal_paid + comparison_result.total_interest_paid_max
+
+    difference_min = total_mortgage_cost_min - comparison_result.total_rent_and_savings_paid
+    difference_max = total_mortgage_cost_max - comparison_result.total_rent_and_savings_paid
+
+    percentage_difference_min = (difference_min / total_mortgage_cost_min) * 100
+    percentage_difference_max = (difference_max / total_mortgage_cost_max) * 100
+
+    if difference_min > 0:
+        print(f"Renting and Saving is more economical by {difference_min:,.0f} to {difference_max:,.0f} IDR")
+        print(f"This represents a {percentage_difference_min:.2f}% to {percentage_difference_max:.2f}% savings compared to buying")
+    else:
+        print(f"Buying is more economical by {-difference_max:,.0f} to {-difference_min:,.0f} IDR")
+        print(f"This represents a {-percentage_difference_max:.2f}% to {-percentage_difference_min:.2f}% savings compared to renting")
+
+    print(f"\nTotal Financial Difference Over {mortgage_params.mortgage_term_years} Years: "
+          f"{difference_min:,.0f} to {difference_max:,.0f} IDR")
     # Detailed Monthly Output (optional)
     for month_data in comparison_result.monthly_comparison:
         print(f"Month {month_data.month}:")
