@@ -3,7 +3,7 @@ import uvicorn
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from calculations.mortgage_calculations import MortgageCalculator, MortgageParams
-from calculations.comparison import MortgageComparison, ComparisonParams
+from calculations.comparison import MortgageComparison, ComparisonParams, ComparisonResult
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -57,18 +57,22 @@ async def mortgage_payments(
         'monthly_payment_first_period': mortgage_payments.monthly_payment_first_period,
         'monthly_payment_subsequent_min': mortgage_payments.monthly_payment_subsequent_min,
         'monthly_payment_subsequent_max': mortgage_payments.monthly_payment_subsequent_max,
-        'total_mortgage_cost': comparison_result.total_mortgage_cost,
+        'total_mortgage_cost_min': comparison_result.total_mortgage_cost_min,
+        'total_mortgage_cost_max': comparison_result.total_mortgage_cost_max,
         'total_rent_cost': comparison_result.total_rent_cost,
-        'total_investment_growth': comparison_result.total_investment_growth,
-        'net_benefit_buying': comparison_result.net_benefit_buying,
+        'total_investment_growth_min': comparison_result.total_investment_growth_min,
+        'total_investment_growth_max': comparison_result.total_investment_growth_max,
+        'net_benefit_buying_min': comparison_result.net_benefit_buying_min,
+        'net_benefit_buying_max': comparison_result.net_benefit_buying_max,
         'monthly_comparison': comparison_result.monthly_comparison,
-        'total_difference_max': comparison_result.total_difference_max,
-        'is_renting_better': comparison_result.is_renting_better,
-        'difference_min': comparison_result.difference_min,
-        'difference_max': comparison_result.difference_max,
-        'percentage_difference_min': comparison_result.percentage_difference_min,
-        'percentage_difference_max': comparison_result.percentage_difference_max,
+        'max_payment_difference': comparison_result.max_payment_difference,
+        'is_buying_cheaper_min': comparison_result.is_buying_cheaper_min,
+        'is_buying_cheaper_max': comparison_result.is_buying_cheaper_max
     }
-    return templates.TemplateResponse("results.html", {"request": request, "results": results})
+    return templates.TemplateResponse("results.html", {
+        "request": request, 
+        "results": results,
+        "mortgage_params": mortgage_params
+    })
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
