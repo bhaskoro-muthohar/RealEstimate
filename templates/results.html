@@ -1,181 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mortgage Calculator Results</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h1,
-        h2 {
-            color: #2c3e50;
-        }
-
-        .summary,
-        .monthly-details {
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .summary-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-        }
-
-        .monthly-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            cursor: help;
-            text-decoration: underline dotted;
-        }
-
-        .value {
-            color: #3498db;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
 </head>
-
 <body>
-    <header style="text-align: right; margin-bottom: 20px; font-size: 0.9em; color: #777;">
-        <span style="margin-right: 10px;">Made by Bhaskoro Muthohar</span>
-        <a href="https://github.com/bhaskoro-muthohar/RealEstimate" target="_blank" rel="noopener noreferrer"
-            style="vertical-align: middle;">
-            <svg height="24" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true"
-                class="octicon octicon-mark-github v-align-middle">
-                <path fill-rule="evenodd"
-                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
-                </path>
-            </svg>
-        </a>
-    </header>
-    <div id="results">
-        <h1>Mortgage Calculator Results</h1>
-        <div class="summary">
-            <h2>Summary</h2>
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <div class="label" title="The total cost of mortgage payments over the loan term.">Total Mortgage
-                        Cost:</div>
-                    <div class="value">
-                        {{ results.total_mortgage_cost_min | round(2) | format_number }} -
-                        {{ results.total_mortgage_cost_max | round(2) | format_number }}
+    <div class="container mt-5">
+        <h1 class="mb-4">Mortgage Calculator Results</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h4 mb-0">Mortgage Payment Details</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Monthly Payment (Fixed Rate Period):</strong> {{ results.monthly_payment_first_period | round(2) | format_number }} IDR</p>
+                        <p><strong>Monthly Payment (Floating Rate Period):</strong> {{ results.monthly_payment_subsequent | round(2) | format_number }} IDR</p>
                     </div>
-                </div>
-                <div class="summary-item">
-                    <div class="label"
-                        title="The total growth of investments made with the difference between mortgage payments and rent.">
-                        Total Investment Growth:</div>
-                    <div class="value">
-                        {{ results.total_investment_growth_min | round(2) | format_number }} -
-                        {{ results.total_investment_growth_max | round(2) | format_number }}
-                    </div>
-                </div>
-                <div class="summary-item">
-                    <div class="label" title="The net financial benefit range">Net Financial Advantage:</div>
-                    <div class="value">
-                        {% if results.is_buying_cheaper_min and results.is_buying_cheaper_max %}
-                        Buying leads to better wealth accumulation: {{ results.net_benefit_buying_min | round(2) |
-                        format_number }} - {{ results.net_benefit_buying_max | round(2) | format_number }} IDR
-                        {% elif not results.is_buying_cheaper_min and not results.is_buying_cheaper_max %}
-                        Renting+Investing leads to better wealth accumulation: {{ results.net_benefit_buying_min | abs |
-                        round(2) | format_number }} - {{ results.net_benefit_buying_max | abs | round(2) | format_number
-                        }} IDR
-                        {% else %}
-                        Outcome varies with interest rate:
-                        Best case: {{ results.net_benefit_buying_max | round(2) | format_number }} IDR (Buying better)
-                        Worst case: {{ results.net_benefit_buying_min | round(2) | format_number }} IDR (Renting better)
-                        {% endif %}
+                    <div class="col-md-6">
+                        <p><strong>Total Mortgage Cost:</strong> {{ results.total_mortgage_cost | round(2) | format_number }} IDR</p>
+                        <p><strong>Total Interest Paid:</strong> {{ results.total_interest_paid | round(2) | format_number }} IDR</p>
+                        <p><strong>Total Principal Paid:</strong> {{ results.total_principal_paid | round(2) | format_number }} IDR</p>
                     </div>
                 </div>
             </div>
         </div>
-        <h2>Monthly Comparison</h2>
-        {% for month_data in results.monthly_comparison %}
-        <div class="monthly-details">
-            <div>
-                <div class="label" title="The current month of the mortgage term.">Month:</div>
-                <div class="value">{{ month_data.month }}</div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h4 mb-0">Buy vs. Rent Comparison</h2>
             </div>
-            <div>
-                <div class="label" title="The monthly mortgage payment based on the minimum potential interest rate.">
-                    Mortgage Payment (Min Rate):</div>
-                <div class="value">{{ month_data.monthly_mortgage_payment_min | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label" title="The monthly mortgage payment based on the maximum potential interest rate.">
-                    Mortgage Payment (Max Rate):</div>
-                <div class="value">{{ month_data.monthly_mortgage_payment_max | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The amount of the monthly payment that goes towards reducing the loan principal.">Principal:
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Total Rent Cost:</strong> {{ results.total_rent_cost | round(2) | format_number }} IDR</p>
+                        <p><strong>Total Investment Growth:</strong> {{ results.total_investment_growth | round(2) | format_number }} IDR</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Financial Recommendation:</strong> 
+                            {% if results.is_buying_cheaper %}
+                            <span class="badge bg-success">Buying is Better</span>
+                            <p>Net benefit: {{ results.net_benefit_buying | round(2) | format_number }} IDR</p>
+                            {% else %}
+                            <span class="badge bg-primary">Renting is Better</span>
+                            <p>Net benefit: {{ (results.net_benefit_buying | abs) | round(2) | format_number }} IDR</p>
+                            {% endif %}
+                        </p>
+                    </div>
                 </div>
-                <div class="value">
-                    {{ month_data.principal_for_the_month_min | round(2) | format_number }} -
-                    {{ month_data.principal_for_the_month_max | round(2) | format_number }}
-                </div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The amount of interest paid this month based on the minimum potential interest rate.">
-                    Interest (Min Rate):</div>
-                <div class="value">{{ month_data.interest_for_the_month_min | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The amount of interest paid this month based on the maximum potential interest rate.">
-                    Interest (Max Rate):</div>
-                <div class="value">{{ month_data.interest_for_the_month_max | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The total amount paid in rent plus potential savings (equivalent to principal payment) for this month.">
-                    Total Rent and Saving:</div>
-                <div class="value">
-                    {{ month_data.total_rent_and_savings_min | round(2) | format_number }} -
-                    {{ month_data.total_rent_and_savings_max | round(2) | format_number }}
-                </div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The difference between mortgage costs and rent+savings for this month, based on the minimum interest rate.">
-                    Financial Difference (Min Rate):</div>
-                <div class="value">{{ month_data.difference_min | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The difference between mortgage costs and rent+savings for this month, based on the maximum interest rate.">
-                    Financial Difference (Max Rate):</div>
-                <div class="value">{{ month_data.difference_max | round(2) | format_number }}</div>
             </div>
         </div>
-        {% endfor %}
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h4 mb-0">Yearly Summary</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Avg. Mortgage Payment</th>
+                                <th>Avg. Rent</th>
+                                <th>Investment Growth</th>
+                                <th>Principal Paid</th>
+                                <th>Interest Paid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for year_data in results.yearly_summary %}
+                            <tr>
+                                <td>{{ year_data.year }}</td>
+                                <td>{{ year_data.average_mortgage_payment | round(2) | format_number }}</td>
+                                <td>{{ year_data.average_rent | round(2) | format_number }}</td>
+                                <td>{{ year_data.yearly_investment_growth | round(2) | format_number }}</td>
+                                <td>{{ year_data.total_principal_paid | round(2) | format_number }}</td>
+                                <td>{{ year_data.total_interest_paid | round(2) | format_number }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/" class="btn btn-primary">Return to Calculator</a>
+        </div>
     </div>
 </body>
-
 </html>
