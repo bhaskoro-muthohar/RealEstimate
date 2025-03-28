@@ -1,193 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mortgage Calculator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            background-color: #f5f7fa;
         }
-
+        
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+        
+        .calculator-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
         h1 {
             color: #2c3e50;
-            text-align: center;
+            margin-bottom: 0;
         }
-
-        form {
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            padding: 20px;
-        }
-
-        label {
+        
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
             display: block;
-            margin-top: 10px;
-            font-weight: bold;
         }
-
-        input[type="number"],
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
+        
+        .form-text {
+            color: #6c757d;
+            font-size: 0.85rem;
             margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
         }
-
-        input[type="submit"] {
-            background-color: #3498db;
+        
+        .input-group-text {
+            background-color: #e9ecef;
+        }
+        
+        .btn-calculate {
+            background-color: #0d6efd;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            margin-top: 20px;
             width: 100%;
+            margin-top: 25px;
+            font-weight: 600;
+            transition: background-color 0.2s;
         }
-
-        input[type="submit"]:hover {
-            background-color: #2980b9;
+        
+        .btn-calculate:hover {
+            background-color: #0b5ed7;
         }
-
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            cursor: help;
+        
+        .language-switcher {
+            text-align: right;
+            margin-bottom: 20px;
         }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
+        
+        .stat-card {
+            transition: transform 0.2s;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .info-card {
+            border-left: 4px solid #0d6efd;
+            background-color: rgba(13, 110, 253, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon {
+            color: #0d6efd;
+            font-size: 1.5rem;
+            margin-right: 10px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function formatNumber(input) {
             let value = input.value.replace(/,/g, '');
             value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             input.value = value;
         }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Add currency symbol to input fields with currency class
+            const currencyInputs = document.querySelectorAll('.currency-input');
+            currencyInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    if (this.value === '') {
+                        this.value = '';
+                    }
+                });
+                
+                input.addEventListener('blur', function() {
+                    formatNumber(this);
+                });
+            });
+        });
+        
+        // Language switcher function
+        function switchLanguage(lang) {
+            const currentLang = document.documentElement.lang;
+            if (currentLang === lang) return;
+            
+            // Store language preference
+            localStorage.setItem('preferredLanguage', lang);
+            
+            // Reload with new language
+            document.documentElement.lang = lang;
+            updateUILanguage(lang);
+        }
+        
+        function updateUILanguage(lang) {
+            const translations = {
+                'en': {
+                    'title': 'Mortgage Calculator',
+                    'subtitle': 'Compare buying vs. renting with investment returns',
+                    'property_price': 'Property Price',
+                    'down_payment': 'Down Payment Percentage',
+                    'interest_first': 'Interest Rate First Period (%)',
+                    'interest_floating': 'Floating Interest Rate (%)',
+                    'interest_floating_group': 'Floating Interest Rate',
+                    'mortgage_term': 'Mortgage Term Years',
+                    'fixed_duration': 'Fixed Interest Duration Years',
+                    'monthly_rent': 'Monthly Rent',
+                    'investment_return': 'Expected Investment Return Rate (%)',
+                    'calculate': 'Calculate',
+                    'intro_title': 'Make Better Financial Decisions',
+                    'intro_text': 'This calculator helps you compare the financial outcomes of buying vs. renting a property, considering mortgage costs, rent expenses, and potential investment returns.',
+                    'back_to_calculator': 'Back to Calculator',
+                    'years': 'years',
+                    // Tooltips
+                    'property_tooltip': 'This is how much the house costs. It\'s like the price tag on the house you want to buy.',
+                    'down_payment_tooltip': 'This is the part of the house price you pay right away. For example, if it\'s 20%, you pay 20% of the house price now, and borrow the rest.',
+                    'interest_first_tooltip': 'This is how much extra you pay the bank each year for borrowing money, for the first few years. It\'s like a fee for using the bank\'s money.',
+                    'interest_floating_tooltip': 'This is the interest rate that will apply after the fixed period ends.',
+                    'mortgage_term_tooltip': 'This is how many years you\'ll take to pay back all the money you borrowed for the house. It\'s like a promise to finish paying in this many years.',
+                    'fixed_duration_tooltip': 'This is how many years the first interest rate stays the same. After this, it might change between the min and max you set earlier.',
+                    'monthly_rent_tooltip': 'This is how much you would pay each month if you rented a similar house instead of buying. We use this to compare renting vs buying.',
+                    'investment_return_tooltip': 'This is the annual return rate you expect to earn on investments made with the difference between mortgage payments and rent.'
+                },
+                'id': {
+                    'title': 'Kalkulator KPR',
+                    'subtitle': 'Bandingkan beli vs. sewa dengan hasil investasi',
+                    'property_price': 'Harga Properti',
+                    'down_payment': 'Persentase Uang Muka',
+                    'interest_first': 'Bunga Fix (%)',
+                    'interest_floating': 'Bunga Floating (%)',
+                    'interest_floating_group': 'Estimasi Bunga Floating',
+                    'mortgage_term': 'Jangka Waktu KPR (tahun)',
+                    'fixed_duration': 'Masa Fix (tahun)',
+                    'monthly_rent': 'Biaya Sewa Bulanan',
+                    'investment_return': 'Return Investasi yang Diharapkan (%)',
+                    'calculate': 'Hitung',
+                    'intro_title': 'Buat Keputusan Finansial Lebih Baik',
+                    'intro_text': 'Kalkulator ini membantu Anda membandingkan hasil finansial dari membeli vs. menyewa properti, dengan mempertimbangkan biaya KPR, biaya sewa, dan potensi return investasi.',
+                    'back_to_calculator': 'Kembali ke Kalkulator',
+                    'years': 'tahun',
+                    // Tooltips
+                    'property_tooltip': 'Ini adalah harga properti yang ingin Anda beli.',
+                    'down_payment_tooltip': 'Ini adalah persentase harga properti yang Anda bayar di muka. Misalnya, jika 20%, Anda membayar 20% dari harga properti di awal, dan meminjam sisanya.',
+                    'interest_first_tooltip': 'Ini adalah Bunga Fix - bunga tetap yang Anda bayarkan ke bank selama masa awal KPR.',
+                    'interest_floating_tooltip': 'Ini adalah estimasi bunga floating setelah masa bunga fix berakhir.',
+                    'mortgage_term_tooltip': 'Ini adalah berapa tahun jangka waktu KPR Anda secara keseluruhan.',
+                    'fixed_duration_tooltip': 'Ini adalah masa fix - berapa tahun bunga tetap berlaku sebelum berubah menjadi bunga floating.',
+                    'monthly_rent_tooltip': 'Ini adalah biaya sewa bulanan untuk properti serupa. Kami gunakan untuk membandingkan antara sewa vs beli.',
+                    'investment_return_tooltip': 'Ini adalah return investasi tahunan yang Anda harapkan dari selisih antara cicilan KPR dan biaya sewa.'
+                }
+            };
+            
+            // Update page title
+            document.title = translations[lang]['title'];
+            document.querySelector('h1').innerText = translations[lang]['title'];
+            
+            // Update labels and tooltips
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.innerText = translations[lang][key];
+                }
+            });
+            
+            // Update tooltips
+            document.querySelectorAll('[data-translate-tooltip]').forEach(element => {
+                const key = element.getAttribute('data-translate-tooltip');
+                if (translations[lang][key + '_tooltip']) {
+                    element.setAttribute('title', translations[lang][key + '_tooltip']);
+                    // Reinitialize tooltip if using Bootstrap tooltips
+                    if (typeof bootstrap !== 'undefined') {
+                        new bootstrap.Tooltip(element);
+                    }
+                }
+            });
+            
+            // Update submit button
+            document.querySelector('button[type="submit"]').innerText = translations[lang]['calculate'];
+            
+            // Update years label in span.input-group-text containing "years"
+            document.querySelectorAll('.input-group-text').forEach(element => {
+                if (element.textContent.trim() === 'years') {
+                    element.textContent = translations[lang]['years'];
+                }
+            });
+        }
+        
+        // Check for stored language preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const storedLang = localStorage.getItem('preferredLanguage');
+            if (storedLang) {
+                updateUILanguage(storedLang);
+                document.documentElement.lang = storedLang;
+            }
+        });
     </script>
 </head>
 
-<body>
-    <header style="text-align: right; margin-bottom: 20px; font-size: 0.9em; color: #777;">
-        <span style="margin-right: 10px;">Made by Bhaskoro Muthohar</span>
-        <a href="https://github.com/bhaskoro-muthohar/RealEstimate" target="_blank" rel="noopener noreferrer"
-            style="vertical-align: middle;">
-            <svg height="24" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true"
-                class="octicon octicon-mark-github v-align-middle">
-                <path fill-rule="evenodd"
-                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
-                </path>
-            </svg>
-        </a>
-    </header>
-
-    <h1>Mortgage Calculator</h1>
-    <form action="/calculate_mortgage_payments" method="post">
-        <label for="property_price">Property Price:
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is how much the house costs. It's like the price tag on the house you
-                    want to buy.</span>
-            </span>
-        </label>
-        <input type="text" id="property_price" name="property_price" required oninput="formatNumber(this)">
-
-        <label for="down_payment_percentage">Down Payment Percentage:
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is the part of the house price you pay right away. For example, if it's
-                    20%, you pay 20% of the house price now, and borrow the rest.</span>
-            </span>
-        </label>
-        <input type="number" id="down_payment_percentage" name="down_payment_percentage" min="0" max="100" step="0.01"
-            required>
-
-        <label for="interest_rate_first_period">Interest Rate First Period (%):
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is how much extra you pay the bank each year for borrowing money, for the
-                    first few years. It's like a fee for using the bank's money.</span>
-            </span>
-        </label>
-        <input type="number" id="interest_rate_first_period" name="interest_rate_first_period" min="0" max="100"
-            step="0.01" required>
-
-        <label for="interest_rate_subsequent_min">Interest Rate Subsequent Min (%):
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is the lowest extra amount you might pay the bank each year after the
-                    first period. It could go up and down, but not lower than this.</span>
-            </span>
-        </label>
-        <input type="number" id="interest_rate_subsequent_min" name="interest_rate_subsequent_min" min="0" max="100"
-            step="0.01" required>
-
-        <label for="interest_rate_subsequent_max">Interest Rate Subsequent Max (%):
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is the highest extra amount you might pay the bank each year after the
-                    first period. It could go up and down, but not higher than this.</span>
-            </span>
-        </label>
-        <input type="number" id="interest_rate_subsequent_max" name="interest_rate_subsequent_max" min="0" max="100"
-            step="0.01" required>
-
-        <label for="mortgage_term_years">Mortgage Term Years:
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is how many years you'll take to pay back all the money you borrowed for
-                    the house. It's like a promise to finish paying in this many years.</span>
-            </span>
-        </label>
-        <input type="number" id="mortgage_term_years" name="mortgage_term_years" required>
-
-        <label for="fixed_interest_duration_years">Fixed Interest Duration Years:
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is how many years the first interest rate stays the same. After this, it
-                    might change between the min and max you set earlier.</span>
-            </span>
-        </label>
-        <input type="number" id="fixed_interest_duration_years" name="fixed_interest_duration_years" required>
-
-        <label for="monthly_rent">Monthly Rent:
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is how much you would pay each month if you rented a similar house
-                    instead of buying. We use this to compare renting vs buying.</span>
-            </span>
-        </label>
-        <input type="text" id="monthly_rent" name="monthly_rent" required oninput="formatNumber(this)">
-
-        <label for="investment_return_rate">Expected Investment Return Rate (%):
-            <span class="tooltip">ℹ️
-                <span class="tooltiptext">This is the annual return rate you expect to earn on investments made with the
-                    difference between mortgage payments and rent.</span>
-            </span>
-        </label>
-        <input type="number" id="investment_return_rate" name="investment_return_rate" min="0" max="100" step="0.01"
-            required>
-        <input type="submit" value="Calculate">
-    </form>
+<body class="bg-light">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2" data-translate="title">Mortgage Calculator</h1>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="switchLanguage('en')">English</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="switchLanguage('id')">Bahasa Indonesia</button>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center small text-muted mb-4">
+            <p class="mb-0" data-translate="subtitle">Compare buying vs. renting with investment returns</p>
+            <div class="d-flex align-items-center">
+                <span class="me-2">Made by Bhaskoro Muthohar</span>
+                <a href="https://github.com/bhaskoro-muthohar/RealEstimate" target="_blank" rel="noopener noreferrer">
+                    <svg height="24" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true"
+                        class="octicon octicon-mark-github v-align-middle">
+                        <path fill-rule="evenodd"
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                        </path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Introduction Card -->
+        <div class="card mb-4 info-card">
+            <div class="card-body">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-info-circle-fill feature-icon"></i>
+                    <div>
+                        <h5 class="mb-2" data-translate="intro_title">Make Better Financial Decisions</h5>
+                        <p class="mb-0" data-translate="intro_text">This calculator helps you compare the financial outcomes of buying vs. renting a property, considering mortgage costs, rent expenses, and potential investment returns.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0" data-translate="title">Mortgage Calculator</h2>
+            </div>
+            <div class="card-body">
+                <form action="/calculate_mortgage_payments" method="post" class="row g-3 needs-validation" novalidate>
+                    <!-- Property Price -->
+                    <div class="col-md-6 mb-3">
+                        <label for="property_price" class="form-label" data-translate="property_price">Property Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" class="form-control currency-input" id="property_price" name="property_price" 
+                                required oninput="formatNumber(this)" data-translate-tooltip="property_price"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is how much the house costs. It's like the price tag on the house you want to buy.">
+                            <div class="invalid-feedback">Please enter the property price.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Down Payment -->
+                    <div class="col-md-6 mb-3">
+                        <label for="down_payment_percentage" class="form-label" data-translate="down_payment">Down Payment Percentage</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="down_payment_percentage" name="down_payment_percentage" 
+                                min="0" max="100" step="0.01" required data-translate-tooltip="down_payment"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is the part of the house price you pay right away. For example, if it's 20%, you pay 20% of the house price now, and borrow the rest.">
+                            <span class="input-group-text">%</span>
+                            <div class="invalid-feedback">Please enter a valid percentage between 0 and 100.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interest First Period (Bunga Fix) -->
+                    <div class="col-md-6 mb-3">
+                        <label for="interest_rate_first_period" class="form-label" data-translate="interest_first">Interest Rate First Period (%)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="interest_rate_first_period" name="interest_rate_first_period" 
+                                min="0" max="100" step="0.01" required data-translate-tooltip="interest_first"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is how much extra you pay the bank each year for borrowing money, for the first few years. It's like a fee for using the bank's money.">
+                            <span class="input-group-text">%</span>
+                            <div class="invalid-feedback">Please enter a valid interest rate.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fixed Interest Duration (Masa Fix) -->
+                    <div class="col-md-6 mb-3">
+                        <label for="fixed_interest_duration_years" class="form-label" data-translate="fixed_duration">Fixed Interest Duration Years</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="fixed_interest_duration_years" name="fixed_interest_duration_years" 
+                                min="0" max="50" required data-translate-tooltip="fixed_duration"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is how many years the first interest rate stays the same. After this, it might change between the min and max you set earlier.">
+                            <span class="input-group-text">years</span>
+                            <div class="invalid-feedback">Please enter a valid fixed interest duration.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mortgage Term (Jangka Waktu KPR) -->
+                    <div class="col-md-6 mb-3">
+                        <label for="mortgage_term_years" class="form-label" data-translate="mortgage_term">Mortgage Term Years</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="mortgage_term_years" name="mortgage_term_years" 
+                                min="1" max="50" required data-translate-tooltip="mortgage_term"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is how many years you'll take to pay back all the money you borrowed for the house. It's like a promise to finish paying in this many years.">
+                            <span class="input-group-text">years</span>
+                            <div class="invalid-feedback">Please enter a valid mortgage term.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estimasi Bunga Floating -->
+                    <div class="col-md-6 mb-3">
+                        <label for="interest_rate_subsequent" class="form-label" data-translate="interest_floating_group">Floating Interest Rate</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="interest_rate_subsequent" name="interest_rate_subsequent" 
+                                min="0" max="100" step="0.01" required data-translate-tooltip="interest_floating"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is the interest rate that will apply after the fixed period ends.">
+                            <span class="input-group-text">%</span>
+                            <div class="invalid-feedback">Please enter a valid interest rate.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Rent -->
+                    <div class="col-md-6 mb-3">
+                        <label for="monthly_rent" class="form-label" data-translate="monthly_rent">Monthly Rent</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" class="form-control currency-input" id="monthly_rent" name="monthly_rent" 
+                                required oninput="formatNumber(this)" data-translate-tooltip="monthly_rent"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is how much you would pay each month if you rented a similar house instead of buying. We use this to compare renting vs buying.">
+                            <div class="invalid-feedback">Please enter the monthly rent amount.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Investment Return Rate -->
+                    <div class="col-md-6 mb-3">
+                        <label for="investment_return_rate" class="form-label" data-translate="investment_return">Expected Investment Return Rate (%)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="investment_return_rate" name="investment_return_rate" 
+                                min="0" max="100" step="0.01" required data-translate-tooltip="investment_return"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="This is the annual return rate you expect to earn on investments made with the difference between mortgage payments and rent.">
+                            <span class="input-group-text">%</span>
+                            <div class="invalid-feedback">Please enter a valid investment return rate.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-lg w-100" data-translate="calculate">Calculate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center text-muted small mt-4">
+            <p>© 2023-2024 RealEstimate. All calculations are estimates for illustrative purposes only.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add form validation
+        (function() {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
 </body>
-
 </html>

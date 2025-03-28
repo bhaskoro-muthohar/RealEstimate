@@ -1,181 +1,1091 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mortgage Calculator Results</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+    <script>
+        // Register the annotation plugin globally if it exists
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ChartAnnotation !== 'undefined') {
+                Chart.register(ChartAnnotation);
+            }
+        });
+        
+        // Language switcher function
+        function switchLanguage(lang) {
+            const currentLang = document.documentElement.lang;
+            if (currentLang === lang) return;
+            
+            // Store language preference
+            localStorage.setItem('preferredLanguage', lang);
+            
+            // Update UI
+            document.documentElement.lang = lang;
+            updateUILanguage(lang);
+        }
+        
+        function updateUILanguage(lang) {
+            const translations = {
+                'en': {
+                    'title': 'Mortgage Calculator Results',
+                    'recommendation': 'Financial Recommendation:',
+                    'buying_better': 'Buying is Better',
+                    'renting_better': 'Renting is Better',
+                    'net_benefit': 'Net benefit:',
+                    'wealth_comparison': 'Wealth Comparison: Buying vs. Renting',
+                    'buying_scenario': 'Buying Scenario Wealth',
+                    'renting_scenario': 'Renting Scenario Wealth',
+                    'property_value': 'Property Value:',
+                    'total_principal_paid': 'Total Principal Paid:',
+                    'interest_paid': 'Interest Paid:',
+                    'final_net_wealth': 'Final Net Wealth:',
+                    'principal_invested': 'Principal Invested:',
+                    'investment_growth': 'Investment Growth:',
+                    'no_property': 'No Property Ownership',
+                    'final_recommendation': 'Final Recommendation:',
+                    'buying_provides': 'Buying provides more wealth in the long-term by',
+                    'renting_provides': 'Renting and investing provides more wealth by',
+                    'print_report': 'Print Report',
+                    'back_to_calculator': 'Back to Calculator',
+                    'monthly_payments': 'Monthly Payments',
+                    'fixed_period': 'Fixed Period',
+                    'floating_period': 'Floating Period',
+                    'total_lifetime_costs': 'Total Lifetime Costs',
+                    'mortgage_cost': 'Mortgage Cost',
+                    'rent_cost': 'Rent Cost',
+                    'key_financial_insights': 'Key Financial Insights',
+                    'cost_breakdown': 'Cost Breakdown',
+                    'total_interest': 'Total Interest',
+                    'total_principal': 'Total Principal',
+                    'payment_comparison': 'Payment Comparison',
+                    'investment_growth_breakdown': 'Investment Growth Breakdown',
+                    'mortgage_breakdown': 'Mortgage Breakdown',
+                    'yearly_summary': 'Yearly Summary',
+                    'year': 'Year',
+                    'avg_mortgage': 'Avg. Mortgage',
+                    'avg_rent': 'Avg. Rent',
+                    'investment_growth_th': 'Investment Growth',
+                    'principal_paid': 'Principal Paid',
+                    'interest_paid_th': 'Interest Paid',
+                    'in_favor_of_buying': 'in favor of buying',
+                    'in_favor_of_renting': 'in favor of renting'
+                },
+                'id': {
+                    'title': 'Hasil Perhitungan KPR',
+                    'recommendation': 'Rekomendasi Finansial:',
+                    'buying_better': 'Membeli Lebih Baik',
+                    'renting_better': 'Menyewa Lebih Baik',
+                    'net_benefit': 'Keuntungan bersih:',
+                    'wealth_comparison': 'Perbandingan Kekayaan: Beli vs. Sewa',
+                    'buying_scenario': 'Skenario Kekayaan Membeli',
+                    'renting_scenario': 'Skenario Kekayaan Menyewa',
+                    'property_value': 'Nilai Properti:',
+                    'total_principal_paid': 'Total Pokok Dibayar:',
+                    'interest_paid': 'Bunga Dibayar:',
+                    'final_net_wealth': 'Kekayaan Bersih Akhir:',
+                    'principal_invested': 'Pokok Diinvestasikan:',
+                    'investment_growth': 'Pertumbuhan Investasi:',
+                    'no_property': 'Tidak Ada Kepemilikan Properti',
+                    'final_recommendation': 'Rekomendasi Akhir:',
+                    'buying_provides': 'Membeli memberikan kekayaan lebih besar dalam jangka panjang sebesar',
+                    'renting_provides': 'Menyewa dan berinvestasi memberikan kekayaan lebih besar sebesar',
+                    'print_report': 'Cetak Laporan',
+                    'back_to_calculator': 'Kembali ke Kalkulator',
+                    'monthly_payments': 'Pembayaran Bulanan',
+                    'fixed_period': 'Periode Fix',
+                    'floating_period': 'Periode Floating',
+                    'total_lifetime_costs': 'Total Biaya Seumur Hidup',
+                    'mortgage_cost': 'Biaya KPR',
+                    'rent_cost': 'Biaya Sewa',
+                    'key_financial_insights': 'Wawasan Finansial Utama',
+                    'cost_breakdown': 'Rincian Biaya',
+                    'total_interest': 'Total Bunga',
+                    'total_principal': 'Total Pokok',
+                    'payment_comparison': 'Perbandingan Pembayaran',
+                    'investment_growth_breakdown': 'Rincian Pertumbuhan Investasi',
+                    'mortgage_breakdown': 'Rincian KPR',
+                    'yearly_summary': 'Ringkasan Tahunan',
+                    'year': 'Tahun',
+                    'avg_mortgage': 'Rata-rata KPR',
+                    'avg_rent': 'Rata-rata Sewa',
+                    'investment_growth_th': 'Pertumbuhan Investasi',
+                    'principal_paid': 'Pokok Dibayar',
+                    'interest_paid_th': 'Bunga Dibayar',
+                    'in_favor_of_buying': 'menguntungkan membeli',
+                    'in_favor_of_renting': 'menguntungkan menyewa'
+                }
+            };
+            
+            // Update page title
+            document.title = translations[lang]['title'];
+            
+            // Update all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.innerText = translations[lang][key];
+                }
+            });
+        }
+        
+        // Check for stored language preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const storedLang = localStorage.getItem('preferredLanguage');
+            if (storedLang) {
+                updateUILanguage(storedLang);
+                document.documentElement.lang = storedLang;
+            }
+        });
+    </script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .stat-card {
+            transition: transform 0.2s;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        h1,
-        h2 {
-            color: #2c3e50;
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
-
-        .summary,
-        .monthly-details {
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .recommendation-card {
+            border-left-width: 5px;
         }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+        .recommendation-buying {
+            border-left-color: #198754;
         }
-
-        .summary-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
+        .recommendation-renting {
+            border-left-color: #0d6efd;
         }
-
-        .monthly-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .label {
+        .stat-value {
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-bottom: 5px;
-            cursor: help;
-            text-decoration: underline dotted;
         }
-
-        .value {
-            color: #3498db;
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .year-nav {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+        }
+        .year-nav .btn {
+            margin-right: 5px;
+        }
+        .mobile-summary-card {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            z-index: 1000;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            padding: 12px 16px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+        .mobile-summary-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border: none;
+        }
+        .high-contrast-text {
+            color: #212529;
+        }
+        .high-contrast-label {
+            color: #495057;
+        }
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1rem;
+            }
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            .mobile-summary-card {
+                display: block;
+            }
+            .mobile-summary-toggle {
+                display: flex;
+            }
+            .desktop-summary {
+                margin-bottom: 80px;
+            }
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: white !important;
+            }
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            .chart-container {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                border: 1px solid #dee2e6 !important;
+                box-shadow: none !important;
+            }
         }
     </style>
 </head>
+<body class="bg-light">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2" data-translate="title">Mortgage Calculator Results</h1>
+            <div>
+                <div class="btn-group me-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="switchLanguage('en')">English</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="switchLanguage('id')">Bahasa Indonesia</button>
+                </div>
+                <button onclick="window.print()" class="btn btn-outline-secondary me-2" aria-label="Print results">
+                    <i class="bi bi-printer"></i> <span data-translate="print_report">Print Report</span>
+                </button>
+                <a href="/" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> <span data-translate="back_to_calculator">Back to Calculator</span></a>
+            </div>
+        </div>
+        
+        <!-- Summary Dashboard -->
+        <div class="row g-3 mb-4 desktop-summary">
+            <!-- Main Recommendation Card -->
+            <div class="col-12 mb-3">
+                <div class="card recommendation-card {% if results.is_buying_cheaper %}recommendation-buying{% else %}recommendation-renting{% endif %}">
+                    <div class="card-body d-flex flex-row align-items-center p-4">
+                        <div class="me-4">
+                            {% if results.is_buying_cheaper %}
+                            <i class="bi bi-house-check text-success" style="font-size: 3.5rem;"></i>
+                            {% else %}
+                            <i class="bi bi-currency-exchange text-primary" style="font-size: 3.5rem;"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h2 class="h4 mb-2" data-translate="recommendation">Financial Recommendation:</h2>
+                            <div class="d-flex align-items-center mb-1">
+                                {% if results.is_buying_cheaper %}
+                                <div class="badge bg-success p-2 fs-5 me-3" data-translate="buying_better">Buying is Better</div>
+                                {% else %}
+                                <div class="badge bg-primary p-2 fs-5 me-3" data-translate="renting_better">Renting is Better</div>
+                                {% endif %}
+                                <span class="stat-value text-{% if results.is_buying_cheaper %}success{% else %}primary{% endif %}">
+                                    <span data-translate="net_benefit">Net benefit:</span> {{ (results.net_benefit_buying if results.is_buying_cheaper else results.net_benefit_buying|abs) | round(2) | format_number }} IDR
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scenario Comparison -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0" data-translate="wealth_comparison">Wealth Comparison: Buying vs. Renting</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Buying Scenario -->
+                    <div class="col-md-6">
+                        <div class="card h-100 border-success border-2">
+                            <div class="card-header bg-success bg-opacity-10 py-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-house-check text-success me-2" style="font-size: 1.5rem;"></i>
+                                    <h6 class="mb-0" data-translate="buying_scenario">Buying Scenario Wealth</h6>
+                                </div>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span><i class="bi bi-house me-2"></i> <span data-translate="property_value">Property Value:</span></span>
+                                        <span class="fw-bold">{{ mortgage_params.property_price | round(2) | format_number }} IDR</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span><i class="bi bi-currency-dollar me-2"></i> <span data-translate="total_principal_paid">Total Principal Paid:</span></span>
+                                        <span class="fw-bold text-success">{{ results.total_principal_paid | round(2) | format_number }} IDR</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span><i class="bi bi-graph-down-arrow me-2"></i> <span data-translate="interest_paid">Interest Paid:</span></span>
+                                        <span class="fw-bold text-danger">- {{ results.total_interest_paid | round(2) | format_number }} IDR</span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold" data-translate="final_net_wealth">Final Net Wealth:</span>
+                                    <span class="fs-5 fw-bold text-success">{{ (mortgage_params.property_price - results.total_interest_paid) | round(2) | format_number }} IDR</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Renting Scenario -->
+                    <div class="col-md-6">
+                        <div class="card h-100 border-primary border-2">
+                            <div class="card-header bg-primary bg-opacity-10 py-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-currency-exchange text-primary me-2" style="font-size: 1.5rem;"></i>
+                                    <h6 class="mb-0" data-translate="renting_scenario">Renting Scenario Wealth</h6>
+                                </div>
+                            </div>
+                            <div class="card-body p-3">
+                                <!-- Calculate total principal invested -->
+                                {% set total_principal_invested = results.total_mortgage_cost - results.total_rent_cost %}
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span><i class="bi bi-piggy-bank me-2"></i> <span data-translate="principal_invested">Principal Invested:</span></span>
+                                        <span class="fw-bold">{{ total_principal_invested | round(2) | format_number }} IDR</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span><i class="bi bi-graph-up-arrow me-2"></i> <span data-translate="investment_growth">Investment Growth:</span></span>
+                                        <span class="fw-bold text-success">+ {{ results.total_investment_growth | round(2) | format_number }} IDR</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 text-muted">
+                                        <span><i class="bi bi-house-slash me-2"></i> <span data-translate="no_property">No Property Ownership</span></span>
+                                        <span class="fst-italic">$0</span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold" data-translate="final_net_wealth">Final Net Wealth:</span>
+                                    <span class="fs-5 fw-bold text-primary">{{ (total_principal_invested + results.total_investment_growth) | round(2) | format_number }} IDR</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Net Benefit Explanation -->
+                    <div class="col-12 mt-3">
+                        <div class="card border-{% if results.is_buying_cheaper %}success{% else %}primary{% endif %} bg-{% if results.is_buying_cheaper %}success{% else %}primary{% endif %} bg-opacity-10">
+                            <div class="card-body py-3 px-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1" data-translate="final_recommendation">Final Recommendation: <strong>{% if results.is_buying_cheaper %}<span data-translate="buying_better">Buying is Better</span>{% else %}<span data-translate="renting_better">Renting is Better</span>{% endif %}</strong></h6>
+                                        <p class="mb-0">
+                                            {% if results.is_buying_cheaper %}<span data-translate="buying_provides">Buying provides more wealth in the long-term by</span> {{ (results.net_benefit_buying) | round(2) | format_number }} IDR
+                                            {% else %}<span data-translate="renting_provides">Renting and investing provides more wealth by</span> {{ (results.net_benefit_buying|abs) | round(2) | format_number }} IDR
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="fs-4 fw-bold text-{% if results.is_buying_cheaper %}success{% else %}primary{% endif %}">
+                                        {{ (results.net_benefit_buying if results.is_buying_cheaper else results.net_benefit_buying|abs) | round(2) | format_number }} IDR
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Financial Metrics Summary -->
+        <div class="row g-3 mb-4">
+            <!-- Key Financial Metrics -->
+            <div class="col-md-6">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <h3 class="h5 mb-2" data-translate="monthly_payments">Monthly Payments</h3>
+                    </div>
+                    <div class="col-6">
+                        <div class="card stat-card h-100">
+                            <div class="card-body p-3">
+                                <p class="stat-label mb-1" data-translate="fixed_period">Fixed Period</p>
+                                <p class="stat-value">{{ results.monthly_payment_first_period | round(2) | format_number }} IDR</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card stat-card h-100">
+                            <div class="card-body p-3">
+                                <p class="stat-label mb-1" data-translate="floating_period">Floating Period</p>
+                                <p class="stat-value">{{ results.monthly_payment_subsequent | round(2) | format_number }} IDR</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Total Costs -->
+            <div class="col-md-6">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <h3 class="h5 mb-2" data-translate="total_lifetime_costs">Total Lifetime Costs</h3>
+                    </div>
+                    <div class="col-6">
+                        <div class="card stat-card h-100 border-success border-2">
+                            <div class="card-body p-3">
+                                <p class="stat-label mb-1" data-translate="mortgage_cost">Mortgage Cost</p>
+                                <p class="stat-value">{{ results.total_mortgage_cost | round(2) | format_number }} IDR</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card stat-card h-100 border-primary border-2">
+                            <div class="card-body p-3">
+                                <p class="stat-label mb-1" data-translate="rent_cost">Rent Cost</p>
+                                <p class="stat-value">{{ results.total_rent_cost | round(2) | format_number }} IDR</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<body>
-    <header style="text-align: right; margin-bottom: 20px; font-size: 0.9em; color: #777;">
-        <span style="margin-right: 10px;">Made by Bhaskoro Muthohar</span>
-        <a href="https://github.com/bhaskoro-muthohar/RealEstimate" target="_blank" rel="noopener noreferrer"
-            style="vertical-align: middle;">
-            <svg height="24" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true"
-                class="octicon octicon-mark-github v-align-middle">
-                <path fill-rule="evenodd"
-                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
-                </path>
-            </svg>
-        </a>
-    </header>
-    <div id="results">
-        <h1>Mortgage Calculator Results</h1>
-        <div class="summary">
-            <h2>Summary</h2>
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <div class="label" title="The total cost of mortgage payments over the loan term.">Total Mortgage
-                        Cost:</div>
-                    <div class="value">
-                        {{ results.total_mortgage_cost_min | round(2) | format_number }} -
-                        {{ results.total_mortgage_cost_max | round(2) | format_number }}
+        <!-- Key Insights Card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0" data-translate="key_financial_insights">Key Financial Insights</h5>
+            </div>
+            <div class="card-body p-3">
+                <div class="row g-3">
+                    <!-- Mortgage vs Rent Breakdown -->
+                    <div class="col-md-6">
+                        <!-- Calculate total principal invested -->
+                        {% set total_principal_invested = results.total_mortgage_cost - results.total_rent_cost %}
+                        <div class="card mb-3 border-0 bg-light">
+                            <div class="card-body p-3">
+                                <h6 class="mb-3 border-bottom pb-2" data-translate="cost_breakdown">Cost Breakdown</h6>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="stat-label" data-translate="total_interest">Total Interest</span>
+                                            <span class="stat-value fs-5 text-danger">{{ results.total_interest_paid | round(2) | format_number }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column">
+                                            <span class="stat-label" data-translate="total_principal">Total Principal</span>
+                                            <span class="stat-value fs-5 text-success">{{ results.total_principal_paid | round(2) | format_number }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <hr class="my-1">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="stat-label" data-translate="investment_growth">Investment Growth</span>
+                                            <span class="stat-value text-primary">{{ results.total_investment_growth | round(2) | format_number }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <strong data-translate="net_benefit">Net Benefit:</strong> {{ (results.net_benefit_buying if results.is_buying_cheaper else results.net_benefit_buying|abs) | round(2) | format_number }} IDR
+                            <span data-translate="{% if results.is_buying_cheaper %}in_favor_of_buying{% else %}in_favor_of_renting{% endif %}">{% if results.is_buying_cheaper %}in favor of buying{% else %}in favor of renting{% endif %}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="summary-item">
-                    <div class="label"
-                        title="The total growth of investments made with the difference between mortgage payments and rent.">
-                        Total Investment Growth:</div>
-                    <div class="value">
-                        {{ results.total_investment_growth_min | round(2) | format_number }} -
-                        {{ results.total_investment_growth_max | round(2) | format_number }}
-                    </div>
-                </div>
-                <div class="summary-item">
-                    <div class="label" title="The net financial benefit range">Net Financial Advantage:</div>
-                    <div class="value">
-                        {% if results.is_buying_cheaper_min and results.is_buying_cheaper_max %}
-                        Buying leads to better wealth accumulation: {{ results.net_benefit_buying_min | round(2) |
-                        format_number }} - {{ results.net_benefit_buying_max | round(2) | format_number }} IDR
-                        {% elif not results.is_buying_cheaper_min and not results.is_buying_cheaper_max %}
-                        Renting+Investing leads to better wealth accumulation: {{ results.net_benefit_buying_min | abs |
-                        round(2) | format_number }} - {{ results.net_benefit_buying_max | abs | round(2) | format_number
-                        }} IDR
-                        {% else %}
-                        Outcome varies with interest rate:
-                        Best case: {{ results.net_benefit_buying_max | round(2) | format_number }} IDR (Buying better)
-                        Worst case: {{ results.net_benefit_buying_min | round(2) | format_number }} IDR (Renting better)
-                        {% endif %}
+                    
+                    <!-- Financial Calculation Explanation -->
+                    <div class="col-md-6">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Key Values</th>
+                                        <th scope="col" class="text-end">Amount (IDR)</th>
+                                        <th scope="col" class="text-center">Used in Net Benefit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-primary">
+                                        <td><strong>Principal Invested</strong> (mortgage cost - rent cost)</td>
+                                        <td class="text-end">{{ total_principal_invested | round(2) | format_number }}</td>
+                                        <td class="text-center"><i class="bi bi-x-circle text-danger"></i> No</td>
+                                    </tr>
+                                    <tr class="table-success">
+                                        <td><strong>Pure Investment Growth</strong> (returns only)</td>
+                                        <td class="text-end">{{ results.total_investment_growth | round(2) | format_number }}</td>
+                                        <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i> Yes</td>
+                                    </tr>
+                                    <tr class="table-primary border-top border-2">
+                                        <td><strong>Total Investment Value</strong> (principal + growth)</td>
+                                        <td class="text-end fw-bold text-primary">{{ (total_principal_invested + results.total_investment_growth) | round(2) | format_number }}</td>
+                                        <td class="text-center"><i class="bi bi-info-circle text-primary"></i> Chart line</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="card border-info mt-3 bg-light">
+                            <div class="card-body p-3">
+                                <h6 class="card-title">Why We Use Pure Growth Only</h6>
+                                <p class="mb-0 small">
+                                    When comparing buying vs. renting, the principal amount would be spent either way (as mortgage or savings). Only the investment growth or interest saved represents an actual difference in wealth outcome.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <h2>Monthly Comparison</h2>
-        {% for month_data in results.monthly_comparison %}
-        <div class="monthly-details">
-            <div>
-                <div class="label" title="The current month of the mortgage term.">Month:</div>
-                <div class="value">{{ month_data.month }}</div>
+
+        <!-- Data Visualization -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <ul class="nav nav-tabs card-header-tabs" id="chartTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="comparison-tab" data-bs-toggle="tab" data-bs-target="#comparison" type="button" role="tab" aria-controls="comparison" aria-selected="true" data-translate="payment_comparison">Payment Comparison</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="investment-tab" data-bs-toggle="tab" data-bs-target="#investment" type="button" role="tab" aria-controls="investment" aria-selected="false" data-translate="investment_growth_breakdown">Investment Growth Breakdown</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="mortgage-tab" data-bs-toggle="tab" data-bs-target="#mortgage" type="button" role="tab" aria-controls="mortgage" aria-selected="false" data-translate="mortgage_breakdown">Mortgage Breakdown</button>
+                    </li>
+                </ul>
             </div>
-            <div>
-                <div class="label" title="The monthly mortgage payment based on the minimum potential interest rate.">
-                    Mortgage Payment (Min Rate):</div>
-                <div class="value">{{ month_data.monthly_mortgage_payment_min | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label" title="The monthly mortgage payment based on the maximum potential interest rate.">
-                    Mortgage Payment (Max Rate):</div>
-                <div class="value">{{ month_data.monthly_mortgage_payment_max | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The amount of the monthly payment that goes towards reducing the loan principal.">Principal:
+            <div class="card-body">
+                <div class="tab-content" id="chartTabsContent">
+                    <div class="tab-pane fade show active" id="comparison" role="tabpanel" aria-labelledby="comparison-tab">
+                        <div class="chart-container" style="position: relative; height:300px;">
+                            <canvas id="paymentComparisonChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="investment" role="tabpanel" aria-labelledby="investment-tab">
+                        <div class="alert alert-warning small mb-3">
+                            <i class="bi bi-lightbulb-fill me-1"></i> <strong>Important Note:</strong> The blue line shows the total investment value (principal + growth). The dashed red line shows the pure investment growth used in the net benefit calculation.
+                        </div>
+                        <div class="chart-container" style="position: relative; height:300px;">
+                            <canvas id="investmentGrowthChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="mortgage" role="tabpanel" aria-labelledby="mortgage-tab">
+                        <div class="chart-container" style="position: relative; height:300px;">
+                            <canvas id="mortgageBreakdownChart"></canvas>
+                        </div>
+                    </div>
                 </div>
-                <div class="value">
-                    {{ month_data.principal_for_the_month_min | round(2) | format_number }} -
-                    {{ month_data.principal_for_the_month_max | round(2) | format_number }}
-                </div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The amount of interest paid this month based on the minimum potential interest rate.">
-                    Interest (Min Rate):</div>
-                <div class="value">{{ month_data.interest_for_the_month_min | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The amount of interest paid this month based on the maximum potential interest rate.">
-                    Interest (Max Rate):</div>
-                <div class="value">{{ month_data.interest_for_the_month_max | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The total amount paid in rent plus potential savings (equivalent to principal payment) for this month.">
-                    Total Rent and Saving:</div>
-                <div class="value">
-                    {{ month_data.total_rent_and_savings_min | round(2) | format_number }} -
-                    {{ month_data.total_rent_and_savings_max | round(2) | format_number }}
-                </div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The difference between mortgage costs and rent+savings for this month, based on the minimum interest rate.">
-                    Financial Difference (Min Rate):</div>
-                <div class="value">{{ month_data.difference_min | round(2) | format_number }}</div>
-            </div>
-            <div>
-                <div class="label"
-                    title="The difference between mortgage costs and rent+savings for this month, based on the maximum interest rate.">
-                    Financial Difference (Max Rate):</div>
-                <div class="value">{{ month_data.difference_max | round(2) | format_number }}</div>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Yearly Summary Table -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0" data-translate="yearly_summary">Yearly Summary</h2>
+                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#yearlySummary">
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+            </div>
+            <div class="collapse show" id="yearlySummary">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th data-translate="year">Year</th>
+                                    <th data-translate="avg_mortgage">Avg. Mortgage</th>
+                                    <th data-translate="avg_rent">Avg. Rent</th>
+                                    <th data-translate="investment_growth_th">Investment Growth</th>
+                                    <th data-translate="principal_paid">Principal Paid</th>
+                                    <th data-translate="interest_paid_th">Interest Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for year_data in results.yearly_summary %}
+                                <tr>
+                                    <td class="fw-bold">{{ year_data.year }}</td>
+                                    <td>{{ year_data.average_mortgage_payment | round(2) | format_number }}</td>
+                                    <td>{{ year_data.average_rent | round(2) | format_number }}</td>
+                                    <td {% if year_data.yearly_investment_growth > 0 %}class="text-success"{% endif %}>
+                                        {{ year_data.yearly_investment_growth | round(2) | format_number }}
+                                    </td>
+                                    <td>{{ year_data.total_principal_paid | round(2) | format_number }}</td>
+                                    <td>{{ year_data.total_interest_paid | round(2) | format_number }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
 
+    <!-- Enhanced Mobile Summary Card -->
+    <div class="mobile-summary-card no-print shadow" id="mobileSummary">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0">Results Summary</h2>
+            <button id="closeMobileSummary" class="btn-close" aria-label="Close summary"></button>
+        </div>
+        <div class="card mb-2 border-{% if results.is_buying_cheaper %}success{% else %}primary{% endif %}">
+            <div class="card-body p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-0 fw-bold">
+                            {% if results.is_buying_cheaper %}
+                            <i class="bi bi-house-check text-success me-1"></i> Buying is Better
+                            {% else %}
+                            <i class="bi bi-currency-exchange text-primary me-1"></i> Renting is Better
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <span class="badge bg-{% if results.is_buying_cheaper %}success{% else %}primary{% endif %} p-2">
+                            {{ (results.net_benefit_buying if results.is_buying_cheaper else results.net_benefit_buying|abs) | round(0) | format_number }} IDR
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-2">
+            <div class="col-6">
+                <div class="card bg-light h-100">
+                    <div class="card-body p-2">
+                        <p class="stat-label mb-0">Monthly Mortgage</p>
+                        <p class="stat-value fs-6 mb-0">{{ results.monthly_payment_first_period | round(0) | format_number }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card bg-light h-100">
+                    <div class="card-body p-2">
+                        <p class="stat-label mb-0">Investment Growth</p>
+                        <p class="stat-value fs-6 mb-0">{{ results.total_investment_growth | round(0) | format_number }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="mobile-summary-toggle no-print shadow" id="showMobileSummary" aria-label="Show summary">
+        <i class="bi bi-{% if results.is_buying_cheaper %}house-check{% else %}currency-exchange{% endif %}-fill fs-5"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Parse data from the template
+            const yearlyData = {{ results.yearly_summary | tojson }};
+            
+            // Map backend property names to chart-expected property names
+            yearlyData.forEach(data => {
+                data.mortgagePayment = data.average_mortgage_payment;
+                data.rent = data.average_rent;
+                data.investmentGrowth = data.yearly_investment_growth;
+                data.principalPaid = data.total_principal_paid;
+                data.interestPaid = data.total_interest_paid;
+            });
+            
+            // Calculate cumulative values for the final net benefit display
+            const totalNetBenefit = {{ results.net_benefit_buying|abs }};
+            
+            // Mobile summary toggle
+            const mobileSummary = document.getElementById('mobileSummary');
+            const showMobileSummary = document.getElementById('showMobileSummary');
+            const closeMobileSummary = document.getElementById('closeMobileSummary');
+            
+            if (showMobileSummary && mobileSummary && closeMobileSummary) {
+                showMobileSummary.addEventListener('click', function() {
+                    mobileSummary.style.display = 'block';
+                    showMobileSummary.style.display = 'none';
+                });
+                
+                closeMobileSummary.addEventListener('click', function() {
+                    mobileSummary.style.display = 'none';
+                    showMobileSummary.style.display = 'flex';
+                });
+            }
+
+
+            // Payment Comparison Chart with tooltips
+            const paymentChart = document.getElementById('paymentComparisonChart');
+            if (paymentChart) {
+                const paymentCtx = paymentChart.getContext('2d');
+                new Chart(paymentCtx, {
+                type: 'line',
+                data: {
+                    labels: yearlyData.map(data => `Year ${data.year}`),
+                    datasets: [
+                        {
+                            label: 'Mortgage Payment',
+                            data: yearlyData.map(data => data.mortgagePayment),
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        },
+                        {
+                            label: 'Rent',
+                            data: yearlyData.map(data => data.rent),
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Payment Comparison'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat('id-ID').format(context.raw.toFixed(0)) + ' IDR';
+                                    return label;
+                                },
+                                footer: function(tooltipItems) {
+                                    const idx = tooltipItems[0].dataIndex;
+                                    const diff = yearlyData[idx].mortgagePayment - yearlyData[idx].rent;
+                                    return 'Difference: ' + new Intl.NumberFormat('id-ID').format(diff.toFixed(0)) + ' IDR';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'IDR'
+                            }
+                        }
+                    }
+                }
+            });
+            }
+
+            // Investment Growth Chart with tooltips
+            const investmentChart = document.getElementById('investmentGrowthChart');
+            if (investmentChart) {
+                const investmentCtx = investmentChart.getContext('2d');
+
+                // Calculate pure investment growth (without principal)
+                const cumulativeGrowth = [];
+                let runningTotal = 0;
+                for (let i = 0; i < yearlyData.length; i++) {
+                    runningTotal += yearlyData[i].investmentGrowth;
+                    cumulativeGrowth.push(runningTotal);
+                }
+                
+                // Calculate total investment amount (principal + growth) for visualization
+                // This is what users see in the cumulative line that causes confusion
+                const totalInvestmentAmount = [];
+                let principalSum = 0;
+                let growthSum = 0;
+                for (let i = 0; i < yearlyData.length; i++) {
+                    // Estimate principal for this year (difference between mortgage and rent)
+                    const yearlyPrincipal = (yearlyData[i].mortgagePayment - yearlyData[i].rent) * 12;
+                    principalSum += yearlyPrincipal;
+                    growthSum += yearlyData[i].investmentGrowth;
+                    totalInvestmentAmount.push(principalSum + growthSum);
+                }
+                
+                // Store in data for tooltips
+                const lastYearIndex = yearlyData.length - 1;
+                if (lastYearIndex >= 0) {
+                    yearlyData[lastYearIndex].pureGrowth = growthSum;
+                    yearlyData[lastYearIndex].totalPrincipal = principalSum;
+                    yearlyData[lastYearIndex].totalInvestmentAmount = principalSum + growthSum;
+                }
+                
+                // Add a dataset for the net benefit amount to clearly show it on the chart
+                const netBenefitData = Array(yearlyData.length).fill(null);
+                if (lastYearIndex >= 0) {
+                    // Only show the net benefit at the last year point
+                    netBenefitData[lastYearIndex] = growthSum; // This is the pure growth amount used in net benefit calculation
+                }
+                
+                new Chart(investmentCtx, {
+                type: 'bar',
+                data: {
+                    labels: yearlyData.map(data => `Year ${data.year}`),
+                    datasets: [
+                        {
+                            label: 'Yearly Growth (Returns Only)',
+                            data: yearlyData.map(data => data.investmentGrowth),
+                            backgroundColor: function(context) {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value >= 0 ? 'rgba(25, 135, 84, 0.7)' : 'rgba(220, 53, 69, 0.7)';
+                            },
+                            hoverBackgroundColor: function(context) {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value >= 0 ? 'rgba(25, 135, 84, 0.9)' : 'rgba(220, 53, 69, 0.9)';
+                            },
+                            order: 3
+                        },
+                        {
+                            label: 'Total Investment (Principal + Growth)',
+                            data: totalInvestmentAmount,
+                            type: 'line',
+                            borderColor: 'rgba(13, 110, 253, 0.8)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(13, 110, 253, 0.8)',
+                            fill: false,
+                            tension: 0.1,
+                            order: 1
+                        },
+                        {
+                            label: 'Pure Investment Growth (Net Benefit)',
+                            data: cumulativeGrowth,
+                            type: 'line',
+                            borderColor: 'rgba(220, 53, 69, 0.8)',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            pointBackgroundColor: 'rgba(220, 53, 69, 0.8)',
+                            pointRadius: function(context) {
+                                // Make the last point larger
+                                return context.dataIndex === lastYearIndex ? 8 : 3;
+                            },
+                            pointStyle: function(context) {
+                                return context.dataIndex === lastYearIndex ? 'star' : 'circle';
+                            },
+                            fill: false,
+                            tension: 0.1,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Investment Growth Comparison'
+                        },
+                        legend: {
+                            labels: {
+                                usePointStyle: true,
+                                generateLabels: function(chart) {
+                                    const original = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                    original.forEach(label => {
+                                        if (label.text.includes('Pure Investment Growth')) {
+                                            label.fillStyle = 'rgba(220, 53, 69, 0.8)';
+                                            label.strokeStyle = 'rgba(220, 53, 69, 0.8)';
+                                            label.pointStyle = 'star';
+                                        }
+                                        if (label.text.includes('Total Investment')) {
+                                            label.fillStyle = 'rgba(13, 110, 253, 0.8)';
+                                            label.strokeStyle = 'rgba(13, 110, 253, 0.8)';
+                                        }
+                                    });
+                                    return original;
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat('id-ID').format(context.raw.toFixed(0)) + ' IDR';
+                                    
+                                    // Add explanatory text depending on dataset
+                                    if (context.dataset.label.includes('Yearly Growth')) {
+                                        if (context.raw < 0) {
+                                            label += ' (Loss)';
+                                        } else if (context.raw > 0) {
+                                            label += ' (Gain)';
+                                        }
+                                    }
+                                    
+                                    // Special note for the last year point of each line series
+                                    const isLastYear = context.dataIndex === yearlyData.length - 1;
+                                    
+                                    if (isLastYear) {
+                                        if (context.dataset.label.includes('Total Investment')) {
+                                            label += ' ← CHART SHOWS THIS';
+                                        } else if (context.dataset.label.includes('Pure Investment Growth')) {
+                                            label += ' ← NET BENEFIT CALCULATION USES THIS';
+                                        }
+                                    }
+                                    
+                                    return label;
+                                },
+                                // Add a footer to explain the difference at the last year point
+                                footer: function(tooltipItems) {
+                                    const isLastYear = tooltipItems[0].dataIndex === yearlyData.length - 1;
+                                    if (isLastYear) {
+                                        // Get the principal and growth values to show the breakdown
+                                        const principal = yearlyData[lastYearIndex].totalPrincipal || 0;
+                                        const growth = yearlyData[lastYearIndex].pureGrowth || 0;
+                                        
+                                        return [
+                                            '───────────────────────',
+                                            'BREAKDOWN:',
+                                            `Principal Invested: ${new Intl.NumberFormat('id-ID').format(principal.toFixed(0))} IDR`,
+                                            `Pure Growth: ${new Intl.NumberFormat('id-ID').format(growth.toFixed(0))} IDR`,
+                                            '───────────────────────',
+                                            'Only pure growth is used in net benefit calculation'
+                                        ];
+                                    }
+                                    return null;
+                                }
+                            }
+                        },
+                        // Add annotation to highlight the net benefit amount (if Chart.js annotation plugin is available)
+                        annotation: {
+                            annotations: {
+                                netBenefitLine: {
+                                    type: 'line',
+                                    yMin: 0,
+                                    yMax: runningTotal, // Use running total as the annotation height
+                                    xMin: lastYearIndex + 0.8,
+                                    xMax: lastYearIndex + 0.8,
+                                    borderColor: 'rgba(220, 53, 69, 0.7)',
+                                    borderWidth: 3,
+                                    borderDash: [5, 5],
+                                    label: {
+                                        enabled: true,
+                                        position: 'center',
+                                        content: 'NET BENEFIT VALUE',
+                                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                                        rotation: 90
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'IDR'
+                            }
+                        }
+                    }
+                }
+            });
+            }
+
+            // Mortgage Breakdown Chart with tooltips
+            const mortgageChart = document.getElementById('mortgageBreakdownChart');
+            if (mortgageChart) {
+                const mortgageCtx = mortgageChart.getContext('2d');
+                new Chart(mortgageCtx, {
+                type: 'bar',
+                data: {
+                    labels: yearlyData.map(data => `Year ${data.year}`),
+                    datasets: [
+                        {
+                            label: 'Principal Paid',
+                            data: yearlyData.map(data => data.principalPaid),
+                            backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                            stack: 'Stack 0',
+                        },
+                        {
+                            label: 'Interest Paid',
+                            data: yearlyData.map(data => data.interestPaid),
+                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                            stack: 'Stack 0',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Mortgage Payment Breakdown'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat('id-ID').format(context.raw.toFixed(0)) + ' IDR';
+                                    return label;
+                                },
+                                footer: function(tooltipItems) {
+                                    let sum = 0;
+                                    tooltipItems.forEach(function(tooltipItem) {
+                                        sum += tooltipItem.raw;
+                                    });
+                                    return 'Total: ' + new Intl.NumberFormat('id-ID').format(sum.toFixed(0)) + ' IDR';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'IDR'
+                            }
+                        }
+                    }
+                }
+            });
+            }
+
+            // Initialize Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Make table rows clickable to show details
+            const tableRows = document.querySelectorAll('table.table tbody tr');
+            tableRows.forEach(row => {
+                row.style.cursor = 'pointer';
+                row.setAttribute('title', 'Click for more details');
+                row.addEventListener('click', function() {
+                    const year = this.querySelector('td:first-child').textContent.trim();
+                    const yearIdx = parseInt(year) - 1;
+                    
+                    if (yearIdx >= 0 && yearIdx < yearlyData.length) {
+                        // Highlight the clicked year in charts
+                        window.scrollTo({
+                            top: document.getElementById('chartTabs').offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
 </html>
