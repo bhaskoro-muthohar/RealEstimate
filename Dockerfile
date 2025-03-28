@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim-buster
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -9,8 +9,8 @@ WORKDIR /app
 
 # Install curl for healthcheck
 RUN apt-get update && apt-get install -y curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 
 # Copy requirements file
 COPY requirements.txt .
