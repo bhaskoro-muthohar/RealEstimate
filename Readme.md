@@ -1,21 +1,28 @@
 # RealEstimate: Real Estate Calculator
 
-A FastAPI-based web application for real estate calculations, providing a user-friendly interface for mortgage payment calculations and rent vs. buy comparisons.
+A FastAPI-based web application for real estate calculations, providing a user-friendly interface for mortgage payment calculations and rent vs. buy comparisons with investment return analysis.
 
 ## Table of Contents
 - [Project Structure](#project-structure)
 - [Setup](#setup)
+  - [Local Setup](#local-setup)
+  - [Docker Setup](#docker-setup)
 - [Running the Application](#running-the-application)
 - [Features](#features)
 - [Calculation Logic](#calculation-logic)
+- [Recent Improvements](#recent-improvements)
+- [API Endpoints](#api-endpoints)
 
 ## Project Structure
 ```
 .
+├── Dockerfile
+├── docker-compose.yml
 ├── LICENSE
 ├── Readme.md
 ├── app.py
 ├── calculations
+│   ├── __init__.py
 │   ├── comparison.py
 │   └── mortgage_calculations.py
 ├── main.py
@@ -26,8 +33,9 @@ A FastAPI-based web application for real estate calculations, providing a user-f
    └── results.html
 ```
 
-
 ## Setup
+
+### Local Setup
 
 1. Clone the repository:
    ```
@@ -59,30 +67,83 @@ A FastAPI-based web application for real estate calculations, providing a user-f
      pip install -r requirements.txt
    ```
 
+### Docker Setup
+
+1. Clone the repository:
+   ```
+     git clone <repository-url>
+   ```
+
+2. Navigate to the project directory:
+   ```
+     cd <project-directory>
+   ```
+
+3. Build and run using Docker Compose:
+   ```
+     docker-compose up --build
+   ```
+   
+   This will build the Docker image and start the container, making the application available at `http://localhost:8000`.
+
+4. Alternatively, you can build and run the Docker container manually:
+   ```
+     docker build -t realestimate .
+     docker run -p 8000:8000 realestimate
+   ```
+
 ## Running the Application
 
-To run the application, use the following command:
+### Web Interface
 
-```
-python app.py
+To run the web application locally:
+
+```bash
+python main.py
 ```
 
-This will start a development server on `http://localhost:5000`.
+This will start the FastAPI server on `http://localhost:8000`.
+
+### CLI Mode
+
+For a quick demonstration without the web interface:
+
+```bash
+python main.py --cli
+```
+
+### Docker Mode
+
+Using Docker Compose:
+```bash
+docker-compose up
+```
+
+Or using Docker directly:
+```bash
+docker run -p 8000:8000 realestimate
+```
+
+To run in CLI mode with Docker:
+```bash
+docker run realestimate python main.py --cli
+```
 
 ## Features
 
 1. **User-friendly Web Interface**: Input mortgage parameters through a clean, responsive HTML form.
 2. **Mortgage Payment Calculation**: Calculates monthly mortgage payments for both fixed and variable interest rate periods.
 3. **Rent vs. Buy Comparison**: Provides a detailed month-by-month comparison of costs associated with renting versus buying.
-4. **Comprehensive Results**: Displays total principal paid, total interest paid (min and max), total rent and savings paid, and overall financial differences.
+4. **Investment Return Analysis**: Calculates potential investment returns on the difference between rent and mortgage payments.
+5. **Comprehensive Results**: Displays total principal paid, total interest paid (min and max), investment growth, and overall financial outcomes.
+6. **High-precision Calculations**: Uses Decimal for accurate financial calculations instead of floating-point.
+7. **Containerized Deployment**: Easy deployment with Docker.
 
 ## Calculation Logic
 
-This API uses the loan amortization formula to calculate monthly mortgage payments. The formula is as follows:
-
+This application uses the loan amortization formula to calculate monthly mortgage payments. The formula is as follows:
 
 $$M = P[r(1+r)^n]/[(1+r)^n – 1]$$
-
 
 Where:
 - M is your monthly payment.
@@ -93,25 +154,35 @@ Where:
 The application uses the following key calculations:
 
 1. **Monthly Mortgage Payment**:
-   Calculated using the standard amortization formula.
+   Calculated using the standard amortization formula with provisions for zero or near-zero interest rates.
 
-2. **Total Principal Paid**:
-   Sum of all principal payments over the loan term.
+2. **Investment Growth**:
+   If renting, the difference between mortgage and rent payments is invested with compound growth.
 
-3. **Total Interest Paid**:
-   Sum of all interest payments, with minimum and maximum values based on variable interest rates.
+3. **Total Wealth Comparison**:
+   Compares potential wealth accumulation between buying (property value minus interest) vs renting (investment returns).
 
-4. **Total Rent and Savings Paid**:
-   Sum of monthly rent payments plus potential principal payments if buying.
+4. **Net Benefit Analysis**:
+   Calculates the net financial benefit of buying vs renting across best and worst case scenarios.
 
-5. **Financial Difference**:
-   Comparison between total costs of buying versus renting, including percentage differences.
+The results are presented in both summary and detailed formats, allowing users to make informed decisions about renting versus buying property.
 
-The results are presented in both summary and detailed month-by-month formats, allowing users to make informed decisions about renting versus buying property.
+## Recent Improvements
+
+The latest version includes significant improvements to the calculation logic:
+
+1. **Decimal-based Precision**: Replaced floating-point with Decimal for precise financial calculations
+2. **Edge Case Handling**: Added proper handling for zero interest rates and other edge cases
+3. **Input Validation**: Comprehensive input validation with meaningful error messages
+4. **Overflow Protection**: Added upper limits to prevent numeric overflow in large calculations
+5. **Fixed Wealth Calculations**: Corrected min/max wealth calculation logic for proper scenario analysis
+6. **Efficient Algorithms**: Optimized calculation approaches to eliminate redundant operations
+7. **Consistent Percentage Handling**: Standardized percentage conversions throughout the codebase
+8. **Improved Investment Calculations**: Fixed compounding logic for more accurate investment growth projections
+9. **Better Exception Handling**: Added comprehensive try/except blocks with appropriate error responses
+10. **Containerization**: Added Docker support for easy deployment
 
 For more detailed information about the calculations, please refer to the `calculations` directory in the source code.
-
-Inspired by: https://www.rumah123.com/kpr/simulasi-kpr/
 
 ## API Endpoints
 
@@ -127,61 +198,39 @@ Calculate monthly mortgage payments based on given parameters.
       "property_price": 300000,
       "down_payment_percentage": 20,
       "interest_rate_first_period": 3.5,
-      "interest_rate_subsequent_min": 3.0,
-      "interest_rate_subsequent_max": 4.0,
+      "interest_rate_subsequent": 4.0,
       "mortgage_term_years": 30,
-      "fixed_interest_duration_years": 5
-    }
-  ```
-- **Success Response:**
-    - **Code:** 200
-    - **Content:**
-    ```
-      {
-        "monthly_payment_first_period": 1077.71,
-        "monthly_payment_subsequent_min": 1010.92,
-        "monthly_payment_subsequent_max": 1145.80
-      }
-    ```
-
-### Month by Month Comparison
-
-Perform a month-by-month comparison of mortgage costs versus renting.
-
-- **URL:** `/month_by_month_comparison`
-- **Method:** `POST`
-- **Data Params:**
-  ```
-    {
-      "monthly_payment_first_period": 1077.71,
-      "monthly_payment_subsequent_min": 1010.92,
-      "monthly_payment_subsequent_max": 1145.80,
+      "fixed_interest_duration_years": 5,
       "monthly_rent": 1200,
-      "mortgage_term_years": 30,
-      "loan_amount": 240000,
-      "interest_rate_first_period": 3.5,
-      "interest_rate_subsequent_min": 3.0,
-      "interest_rate_subsequent_max": 4.0,
-      "fixed_interest_duration_years": 5
+      "investment_return_rate": 6.0
     }
   ```
 - **Success Response:**
-    - **Code:** 200
-    - **Content:**
-    ```
-      {
-        "comparison": [
-          {
-            "month": 1,
-            "mortgage_payment": 1077.71,
-            "rent_payment": 1200,
-            "principal_paid": 352.71,
-            "interest_paid": 725.00,
-            "cumulative_principal_paid": 352.71,
-            "cumulative_interest_paid": 725.00,
-            "remaining_loan_balance": 239647.29
-          },
-          // ... (data for subsequent months)
-        ]
-      }
-    ```
+  - **Code:** 200
+  - **Content:** HTML page with detailed results
+
+## Development
+
+### Running Tests
+
+```bash
+pytest
+```
+
+Or with coverage:
+
+```bash
+pytest --cov=.
+```
+
+### Docker Development Mode
+
+For development with live reloading:
+
+```bash
+docker-compose up --build
+```
+
+The volume mapping in the `docker-compose.yml` file allows you to edit files locally and see changes reflected in the running container.
+
+Inspired by: https://www.rumah123.com/kpr/simulasi-kpr/

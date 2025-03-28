@@ -101,17 +101,36 @@ async def mortgage_payments(
             'total_principal_paid': comparison_result.total_principal_paid
         }
         
+        # Convert yearly summary data to make it JSON serializable
+        serializable_yearly_summary = []
+        for year_data in results['yearly_summary']:
+            serializable_yearly_summary.append({
+                'year': year_data.year,
+                'average_mortgage_payment': float(year_data.average_mortgage_payment),
+                'average_rent': float(year_data.average_rent),
+                'yearly_investment_growth': float(year_data.yearly_investment_growth),
+                'total_principal_paid': float(year_data.total_principal_paid),
+                'total_interest_paid': float(year_data.total_interest_paid)
+            })
+        
+        # Replace the yearly_summary with the serializable version
+        results_copy = results.copy()
+        results_copy['yearly_summary'] = serializable_yearly_summary
+        
         return templates.TemplateResponse("results.html", {
             "request": request, 
-            "results": results,
-            "mortgage_params": mortgage_params
+            "results": results_copy,
+            "mortgage_params": mortgage_params,
+            "mortgage_payments": mortgage_payments
         })
     except ValueError as e:
         # Return error message if validation fails
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         # Log unexpected errors and return a generic error message
-        print(f"Error processing mortgage calculation: {str(e)}")
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Error processing mortgage calculation: {str(e)}\n{error_details}")
         raise HTTPException(status_code=500, detail="An error occurred during calculation")
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
