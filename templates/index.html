@@ -95,6 +95,50 @@
             font-size: 1.5rem;
             margin-right: 10px;
         }
+        
+        /* New styles for visual enhancements */
+        .input-icon {
+            font-size: 1.2rem;
+            color: #0d6efd;
+        }
+        
+        .example-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+            border-left: 3px solid #0d6efd;
+        }
+        
+        .visual-example {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            background-color: white;
+            font-size: 0.9rem;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            color: #0d6efd;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .example-value {
+            font-weight: 600;
+        }
+        
+        .field-group {
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        
+        .field-group:hover {
+            background-color: rgba(13, 110, 253, 0.03);
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -158,6 +202,8 @@
                     'intro_text': 'This calculator helps you compare the financial outcomes of buying vs. renting a property, considering mortgage costs, rent expenses, and potential investment returns.',
                     'back_to_calculator': 'Back to Calculator',
                     'years': 'years',
+                    'example': 'Example',
+                    'typical_values': 'Typical Values',
                     // Tooltips
                     'property_tooltip': 'This is how much the house costs. It\'s like the price tag on the house you want to buy.',
                     'down_payment_tooltip': 'This is the part of the house price you pay right away. For example, if it\'s 20%, you pay 20% of the house price now, and borrow the rest.',
@@ -185,6 +231,8 @@
                     'intro_text': 'Kalkulator ini membantu Anda membandingkan hasil finansial dari membeli vs. menyewa properti, dengan mempertimbangkan biaya KPR, biaya sewa, dan potensi return investasi.',
                     'back_to_calculator': 'Kembali ke Kalkulator',
                     'years': 'tahun',
+                    'example': 'Contoh',
+                    'typical_values': 'Nilai Khas',
                     // Tooltips
                     'property_tooltip': 'Ini adalah harga properti yang ingin Anda beli.',
                     'down_payment_tooltip': 'Ini adalah persentase harga properti yang Anda bayar di muka. Misalnya, jika 20%, Anda membayar 20% dari harga properti di awal, dan meminjam sisanya.',
@@ -228,6 +276,14 @@
             document.querySelectorAll('.input-group-text').forEach(element => {
                 if (element.textContent.trim() === 'years') {
                     element.textContent = translations[lang]['years'];
+                }
+            });
+            
+            
+            // Update example titles
+            document.querySelectorAll('.example-title').forEach(title => {
+                if (title.getAttribute('data-translate-key') && translations[lang][title.getAttribute('data-translate-key')]) {
+                    title.innerText = translations[lang][title.getAttribute('data-translate-key')];
                 }
             });
         }
@@ -281,6 +337,7 @@
             </div>
         </div>
         
+        
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-white">
                 <h2 class="h5 mb-0" data-translate="title">Mortgage Calculator</h2>
@@ -288,8 +345,11 @@
             <div class="card-body">
                 <form action="/calculate_mortgage_payments" method="post" class="row g-3 needs-validation" novalidate>
                     <!-- Property Price -->
-                    <div class="col-md-6 mb-3">
-                        <label for="property_price" class="form-label" data-translate="property_price">Property Price</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-house-door input-icon me-2"></i>
+                            <label for="property_price" class="form-label mb-0" data-translate="property_price">Property Price</label>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
                             <input type="text" class="form-control currency-input" id="property_price" name="property_price" 
@@ -298,11 +358,22 @@
                                 title="This is how much the house costs. It's like the price tag on the house you want to buy.">
                             <div class="invalid-feedback">Please enter the property price.</div>
                         </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="example">Example</div>
+                            <div class="visual-example">
+                                <div>Apartment: <span class="example-value">Rp 500,000,000</span></div>
+                                <div>Small House: <span class="example-value">Rp 1,000,000,000</span></div>
+                                <div>Large House: <span class="example-value">Rp 2,500,000,000</span></div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Down Payment -->
-                    <div class="col-md-6 mb-3">
-                        <label for="down_payment_percentage" class="form-label" data-translate="down_payment">Down Payment Percentage</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-cash-coin input-icon me-2"></i>
+                            <label for="down_payment_percentage" class="form-label mb-0" data-translate="down_payment">Down Payment Percentage</label>
+                        </div>
                         <div class="input-group">
                             <input type="number" class="form-control" id="down_payment_percentage" name="down_payment_percentage" 
                                 min="0" max="100" step="0.01" required data-translate-tooltip="down_payment"
@@ -311,11 +382,29 @@
                             <span class="input-group-text">%</span>
                             <div class="invalid-feedback">Please enter a valid percentage between 0 and 100.</div>
                         </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="typical_values">Typical Values</div>
+                            <div class="visual-example">
+                                <div class="row">
+                                    <div class="col">
+                                        <div>Minimum: <span class="example-value">10%</span></div>
+                                        <div>Common: <span class="example-value">20%</span></div>
+                                    </div>
+                                    <div class="col">
+                                        <div>For a Rp 1,000,000,000 home:</div>
+                                        <div class="example-value">20% = Rp 200,000,000 upfront</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Interest First Period (Bunga Fix) -->
-                    <div class="col-md-6 mb-3">
-                        <label for="interest_rate_first_period" class="form-label" data-translate="interest_first">Interest Rate First Period (%)</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-bank input-icon me-2"></i>
+                            <label for="interest_rate_first_period" class="form-label mb-0" data-translate="interest_first">Interest Rate First Period (%)</label>
+                        </div>
                         <div class="input-group">
                             <input type="number" class="form-control" id="interest_rate_first_period" name="interest_rate_first_period" 
                                 min="0" max="100" step="0.01" required data-translate-tooltip="interest_first"
@@ -324,11 +413,22 @@
                             <span class="input-group-text">%</span>
                             <div class="invalid-feedback">Please enter a valid interest rate.</div>
                         </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="typical_values">Typical Values</div>
+                            <div class="visual-example">
+                                <div>Low: <span class="example-value">5%</span></div>
+                                <div>Average: <span class="example-value">7%</span></div>
+                                <div>High: <span class="example-value">9%</span></div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Fixed Interest Duration (Masa Fix) -->
-                    <div class="col-md-6 mb-3">
-                        <label for="fixed_interest_duration_years" class="form-label" data-translate="fixed_duration">Fixed Interest Duration Years</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-lock input-icon me-2"></i>
+                            <label for="fixed_interest_duration_years" class="form-label mb-0" data-translate="fixed_duration">Fixed Interest Duration Years</label>
+                        </div>
                         <div class="input-group">
                             <input type="number" class="form-control" id="fixed_interest_duration_years" name="fixed_interest_duration_years" 
                                 min="0" max="50" required data-translate-tooltip="fixed_duration"
@@ -337,11 +437,21 @@
                             <span class="input-group-text">years</span>
                             <div class="invalid-feedback">Please enter a valid fixed interest duration.</div>
                         </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="typical_values">Typical Values</div>
+                            <div class="visual-example">
+                                <div>Common: <span class="example-value">2-5 years</span></div>
+                                <div>During this time, your interest rate won't change</div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Mortgage Term (Jangka Waktu KPR) -->
-                    <div class="col-md-6 mb-3">
-                        <label for="mortgage_term_years" class="form-label" data-translate="mortgage_term">Mortgage Term Years</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-calendar-range input-icon me-2"></i>
+                            <label for="mortgage_term_years" class="form-label mb-0" data-translate="mortgage_term">Mortgage Term Years</label>
+                        </div>
                         <div class="input-group">
                             <input type="number" class="form-control" id="mortgage_term_years" name="mortgage_term_years" 
                                 min="1" max="50" required data-translate-tooltip="mortgage_term"
@@ -350,11 +460,21 @@
                             <span class="input-group-text">years</span>
                             <div class="invalid-feedback">Please enter a valid mortgage term.</div>
                         </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="typical_values">Typical Values</div>
+                            <div class="visual-example">
+                                <div>Common: <span class="example-value">15, 20, or 30 years</span></div>
+                                <div>Longer term = lower monthly payment, but more total interest paid</div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Estimasi Bunga Floating -->
-                    <div class="col-md-6 mb-3">
-                        <label for="interest_rate_subsequent" class="form-label" data-translate="interest_floating_group">Floating Interest Rate</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-arrow-up-right input-icon me-2"></i>
+                            <label for="interest_rate_subsequent" class="form-label mb-0" data-translate="interest_floating_group">Floating Interest Rate</label>
+                        </div>
                         <div class="input-group">
                             <input type="number" class="form-control" id="interest_rate_subsequent" name="interest_rate_subsequent" 
                                 min="0" max="100" step="0.01" required data-translate-tooltip="interest_floating"
@@ -363,11 +483,21 @@
                             <span class="input-group-text">%</span>
                             <div class="invalid-feedback">Please enter a valid interest rate.</div>
                         </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="typical_values">Typical Values</div>
+                            <div class="visual-example">
+                                <div>Usually <span class="example-value">1-2%</span> higher than the fixed rate</div>
+                                <div>If fixed rate is 7%, floating might be around <span class="example-value">8-9%</span></div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Monthly Rent -->
-                    <div class="col-md-6 mb-3">
-                        <label for="monthly_rent" class="form-label" data-translate="monthly_rent">Monthly Rent</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-house input-icon me-2"></i>
+                            <label for="monthly_rent" class="form-label mb-0" data-translate="monthly_rent">Monthly Rent</label>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
                             <input type="text" class="form-control currency-input" id="monthly_rent" name="monthly_rent" 
@@ -376,11 +506,22 @@
                                 title="This is how much you would pay each month if you rented a similar house instead of buying. We use this to compare renting vs buying.">
                             <div class="invalid-feedback">Please enter the monthly rent amount.</div>
                         </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="example">Example</div>
+                            <div class="visual-example">
+                                <div>Small Apartment: <span class="example-value">Rp 3,000,000/month</span></div>
+                                <div>House: <span class="example-value">Rp 5,000,000 - 15,000,000/month</span></div>
+                                <div>Luxury: <span class="example-value">Rp 20,000,000+/month</span></div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Investment Return Rate -->
-                    <div class="col-md-6 mb-3">
-                        <label for="investment_return_rate" class="form-label" data-translate="investment_return">Expected Investment Return Rate (%)</label>
+                    <div class="col-md-6 mb-3 field-group p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-graph-up-arrow input-icon me-2"></i>
+                            <label for="investment_return_rate" class="form-label mb-0" data-translate="investment_return">Expected Investment Return Rate (%)</label>
+                        </div>
                         <div class="input-group">
                             <input type="number" class="form-control" id="investment_return_rate" name="investment_return_rate" 
                                 min="0" max="100" step="0.01" required data-translate-tooltip="investment_return"
@@ -388,6 +529,14 @@
                                 title="This is the annual return rate you expect to earn on investments made with the difference between mortgage payments and rent.">
                             <span class="input-group-text">%</span>
                             <div class="invalid-feedback">Please enter a valid investment return rate.</div>
+                        </div>
+                        <div class="example-card">
+                            <div class="example-title" data-translate-key="typical_values">Typical Values</div>
+                            <div class="visual-example">
+                                <div>Conservative: <span class="example-value">4-6%</span> (safer investments)</div>
+                                <div>Moderate: <span class="example-value">7-9%</span> (balanced portfolio)</div>
+                                <div>Aggressive: <span class="example-value">10-12%</span> (higher risk)</div>
+                            </div>
                         </div>
                     </div>
                     
