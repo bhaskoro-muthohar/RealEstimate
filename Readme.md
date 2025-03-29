@@ -3,6 +3,7 @@
 A FastAPI-based web application for real estate calculations, providing a user-friendly interface for mortgage payment calculations and rent vs. buy comparisons with investment return analysis.
 
 ## Table of Contents
+
 - [Project Structure](#project-structure)
 - [Setup](#setup)
   - [Local Setup](#local-setup)
@@ -14,6 +15,7 @@ A FastAPI-based web application for real estate calculations, providing a user-f
 - [API Endpoints](#api-endpoints)
 
 ## Project Structure
+
 ```
 .
 ├── Dockerfile
@@ -38,29 +40,36 @@ A FastAPI-based web application for real estate calculations, providing a user-f
 ### Local Setup
 
 1. Clone the repository:
+
    ```
-     git clone <repository-url>
+     git clone https://github.com/bhaskoro-muthohar/RealEstimate.git
    ```
 
 2. Navigate to the project directory:
+
    ```
-     cd <project-directory>
+     cd RealEstimate
    ```
 
 3. Create a virtual environment:
+
    ```
      python3 -m venv venv
    ```
 
 4. Activate the virtual environment:
-     - On Windows:
-     ```
-       venv\Scripts\activate
-     ```
-     - On Unix or MacOS:
-     ```
-       source venv/bin/activate
-     ```
+
+   - On Windows:
+
+   ```
+     venv\Scripts\activate
+   ```
+
+   - On Unix or MacOS:
+
+   ```
+     source venv/bin/activate
+   ```
 
 5. Install the required packages:
    ```
@@ -70,20 +79,23 @@ A FastAPI-based web application for real estate calculations, providing a user-f
 ### Docker Setup
 
 1. Clone the repository:
+
    ```
-     git clone <repository-url>
+     git clone https://github.com/bhaskoro-muthohar/RealEstimate.git
    ```
 
 2. Navigate to the project directory:
+
    ```
-     cd <project-directory>
+     cd RealEstimate
    ```
 
 3. Build and run using Docker Compose:
+
    ```
      docker-compose up --build
    ```
-   
+
    This will build the Docker image and start the container, making the application available at `http://localhost:8000`.
 
 4. Alternatively, you can build and run the Docker container manually:
@@ -115,16 +127,19 @@ python main.py --cli
 ### Docker Mode
 
 Using Docker Compose:
+
 ```bash
 docker-compose up
 ```
 
 Or using Docker directly:
+
 ```bash
 docker run -p 8000:8000 realestimate
 ```
 
 To run in CLI mode with Docker:
+
 ```bash
 docker run realestimate python main.py --cli
 ```
@@ -146,6 +161,7 @@ This application uses the loan amortization formula to calculate monthly mortgag
 $$M = P[r(1+r)^n]/[(1+r)^n – 1]$$
 
 Where:
+
 - M is your monthly payment.
 - P is the principal loan amount.
 - r is your monthly interest rate, calculated by dividing your annual interest rate by 12.
@@ -166,21 +182,6 @@ The application uses the following key calculations:
    Calculates the net financial benefit of buying vs renting across best and worst case scenarios.
 
 The results are presented in both summary and detailed formats, allowing users to make informed decisions about renting versus buying property.
-
-## Recent Improvements
-
-The latest version includes significant improvements to the calculation logic:
-
-1. **Decimal-based Precision**: Replaced floating-point with Decimal for precise financial calculations
-2. **Edge Case Handling**: Added proper handling for zero interest rates and other edge cases
-3. **Input Validation**: Comprehensive input validation with meaningful error messages
-4. **Overflow Protection**: Added upper limits to prevent numeric overflow in large calculations
-5. **Fixed Wealth Calculations**: Corrected min/max wealth calculation logic for proper scenario analysis
-6. **Efficient Algorithms**: Optimized calculation approaches to eliminate redundant operations
-7. **Consistent Percentage Handling**: Standardized percentage conversions throughout the codebase
-8. **Improved Investment Calculations**: Fixed compounding logic for more accurate investment growth projections
-9. **Better Exception Handling**: Added comprehensive try/except blocks with appropriate error responses
-10. **Containerization**: Added Docker support for easy deployment
 
 For more detailed information about the calculations, please refer to the `calculations` directory in the source code.
 
@@ -211,26 +212,6 @@ Calculate monthly mortgage payments based on given parameters.
 
 ## Development
 
-### Running Tests
-
-```bash
-pytest
-```
-
-Or with coverage:
-
-```bash
-pytest --cov=.
-```
-
-### Docker Development Mode
-
-For development with live reloading:
-
-```bash
-docker-compose up --build
-```
-
-The volume mapping in the `docker-compose.yml` file allows you to edit files locally and see changes reflected in the running container.
+TBA
 
 Inspired by: https://www.rumah123.com/kpr/simulasi-kpr/
