@@ -1,0 +1,75 @@
+name: Deploy RealEstimate
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Full commit SHA to deploy (defaults to the selected ref)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-realestimate
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest -q
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate deployment SHA
+        env:
+          DEPLOY_SHA: ${{ inputs.sha || github.sha }}
+        run: |
+          [[ "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]]
+          echo "DEPLOY_SHA=$DEPLOY_SHA" >> "$GITHUB_ENV"
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/deploy_key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
+
+      - name: Deploy to VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: >-
+          ssh -i "$HOME/.ssh/deploy_key"
+          -o IdentitiesOnly=yes
+          -o BatchMode=yes
+          -p "$VPS_PORT"
+          "$VPS_USER@$VPS_HOST"
+          "sudo /usr/local/sbin/deploy-webapp realestimate $DEPLOY_SHA"
